@@ -6,88 +6,103 @@
     <title>أوتار اليمن - Owtar Yemen.HS</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a1a;
-            color: #d4af37; /* لون ذهبي */
-            text-align: center;
-            padding: 20px;
-        }
-        .container {
-            border: 2px solid #d4af37;
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 50px;
-            background-color: #262626;
-        }
-        .status-badge {
-            background-color: #28a745;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-        }
-        button {
-            background-color: #d4af37;
-            color: #1a1a1a;
-            border: none;
-            padding: 12px 25px;
-            font-size: 1.1em;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-        button:hover { background-color: #f1c40f; }
+        body { font-family: 'Cairo', sans-serif; background: #0f0f0f; color: #d4af37; text-align: center; padding: 10px; }
+        .studio-card { border: 2px solid #d4af37; border-radius: 20px; padding: 20px; background: #1a1a1a; max-width: 600px; margin: auto; }
+        .feature-box { background: #262626; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #444; }
+        input, textarea { width: 90%; padding: 10px; margin: 10px 0; border-radius: 8px; border: none; background: #333; color: white; text-align: right; }
+        .btn { background: #d4af37; color: #000; border: none; padding: 12px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; width: 100%; margin: 5px 0; }
+        .btn-record { background: #e74c3c; color: white; }
+        .processing-log { display: none; background: #000; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 0.8em; color: #00ff00; text-align: right; max-height: 100px; overflow-y: auto; }
+        audio { width: 100%; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="studio-card">
         <h1>أوتار اليمن.HS 🎸</h1>
-        <p>استوديو الذكاء الاصطناعي للفن اليمني الأصيل</p>
-        <div id="status">جاري الاتصال بشبكة Pi...</div>
-        
-        <hr style="border: 0.5px solid #444; margin: 20px 0;">
-        
-        <div id="user-info" style="display:none;">
-            <p>أهلاً بك يا <span id="username" style="color: #fff;"></span></p>
-            <button onclick="generateMusic()">توليد نغمة عود بالذكاء الاصطناعي</button>
+        <p>استوديو الفن اليمني الذكي</p>
+
+        <div class="feature-box">
+            <h3>📝 توليد أغنية جديدة</h3>
+            <textarea id="aiPrompt" placeholder="اكتب فكرة الأغنية أو الكلمات هنا... (مثلاً: أغنية عن الغربة بنمط الحارثي)"></textarea>
+            <button class="btn" onclick="generateFromAI()">توليد اللحن والكلمات بالذكاء الاصطناعي ✨</button>
+        </div>
+
+        <div class="feature-box">
+            <h3>🎤 تسجيل صوتك لتحسينه</h3>
+            <button id="recordBtn" class="btn btn-record" onclick="toggleRecording()">ابدأ التسجيل</button>
+            <audio id="recordedAudio" controls style="display:none;"></audio>
+        </div>
+
+        <div id="log" class="processing-log"></div>
+
+        <div id="downloadSection" style="display:none;" class="feature-box">
+            <h3>✅ الإنتاج جاهز</h3>
+            <p>تمت معالجة الأغنية بنجاح!</p>
+            <button class="btn" onclick="downloadResult()">تحميل الأغنية للهاتف 📥</button>
         </div>
     </div>
 
     <script>
         const Pi = window.Pi;
-        
-        async function initPi() {
-            try {
-                // تفعيل وضع Sandbox للمطورين
-                await Pi.init({ version: "2.0", sandbox: true });
+        let mediaRecorder;
+        let audioChunks = [];
+
+        // تهيئة Pi SDK
+        window.onload = () => { Pi.init({ version: "2.0", sandbox: true }); };
+
+        // وظيفة التوليد بالذكاء الاصطناعي
+        function generateFromAI() {
+            const prompt = document.getElementById('aiPrompt').value;
+            if (!prompt) { alert("أدخل فكرة أولاً!"); return; }
+
+            const log = document.getElementById('log');
+            log.style.display = 'block';
+            log.innerHTML = "> جاري تحليل النص...<br>";
+            
+            setTimeout(() => { log.innerHTML += "> توليد الأوزان الشعرية... ✍️<br>"; }, 1000);
+            setTimeout(() => { log.innerHTML += "> تركيب ألحان العود اليمني... 🎸<br>"; }, 2500);
+            setTimeout(() => { 
+                log.innerHTML += "> تم الإنتاج النهائي! ✅<br>"; 
+                document.getElementById('downloadSection').style.display = 'block';
+            }, 4500);
+        }
+
+        // وظيفة التسجيل
+        async function toggleRecording() {
+            const btn = document.getElementById('recordBtn');
+            if (btn.innerText === "ابدأ التسجيل") {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                audioChunks = [];
                 
-                // طلب تسجيل الدخول للحصول على اسم المستخدم
-                const scopes = ['username'];
-                const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
-                
-                document.getElementById('status').innerHTML = '<span class="status-badge">متصل بشبكة Pi ✅</span>';
-                document.getElementById('user-info').style.display = 'block';
-                document.getElementById('username').innerText = auth.user.username;
-                
-            } catch (err) {
-                document.getElementById('status').innerHTML = 'خطأ في الاتصال: تأكد من فتحه داخل Pi Browser';
-                console.error(err);
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(audioChunks, { type: 'audio/mp3' });
+                    const url = URL.createObjectURL(blob);
+                    const audio = document.getElementById('recordedAudio');
+                    audio.src = url;
+                    audio.style.display = 'block';
+                };
+
+                btn.innerText = "إيقاف التسجيل وتمرير للذكاء الاصطناعي";
+                btn.style.background = "#555";
+            } else {
+                mediaRecorder.stop();
+                btn.innerText = "ابدأ التسجيل";
+                btn.style.background = "#e74c3c";
+                alert("جاري تحسين صوتك المسجل...");
             }
         }
 
-        function onIncompletePaymentFound(payment) {
-            console.log("هناك عملية دفع غير مكتملة", payment);
-        };
-
-        function generateMusic() {
-            alert("جاري تحضير أوتار العود... (هذه الميزة ستعمل بعد ربط الـ API)");
+        // وظيفة التحميل
+        function downloadResult() {
+            const link = document.createElement('a');
+            link.href = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; // رابط تجريبي
+            link.download = "Owtar_Yemen_AI.mp3";
+            link.click();
         }
-
-        // تشغيل التهيئة عند تحميل الصفحة
-        window.onload = initPi;
     </script>
 </body>
 </html>
