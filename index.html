@@ -1,23 +1,50 @@
-function startAIGeneration() {
-        const text = document.getElementById('promptInput').value;
-        if(!text) {
-            alert("يرجى كتابة نص أو فكرة أولاً");
-            return;
-        }
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أوتار اليمن - مشغل الذكاء الاصطناعي</title>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #1a1a1a; color: #d4af37; text-align: center; padding: 50px; }
+        .container { border: 2px solid #d4af37; padding: 30px; border-radius: 20px; max-width: 400px; margin: auto; background-color: #262626; }
+        .btn-play { background-color: #d4af37; color: #000; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 18px; width: 100%; margin-top: 20px; }
+        #status { font-size: 12px; color: #888; margin-top: 10px; }
+        audio { width: 100%; margin-top: 20px; display: none; }
+    </style>
+</head>
+<body>
 
-        const log = document.getElementById('log');
-        log.innerHTML = ""; // تنظيف السجل
-        addLog("جاري تحليل الكلمات: " + text.substring(0, 15) + "...");
+    <div class="container">
+        <h1>أوتار اليمن.HS 🎸</h1>
+        <p>استوديو الفن اليمني</p>
         
-        setTimeout(() => addLog("جاري ضبط مقام العود اليمني... 🎸"), 1500);
-        setTimeout(() => {
-            addLog("تم الإنتاج! يمكنك الاستماع الآن ✅");
-            
-            // هنا قمت بتحديث الرابط لمقطع صوتي حقيقي (كمثال)
-            const player = document.getElementById('audioPlayback');
-            // ملاحظة: هذا رابط تجريبي لمقطع موسيقي، يمكنك استبداله برابط ملف MP3 يمني
-            player.src = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; 
-            player.style.display = "block";
-            player.play(); // تشغيل تلقائي بعد المعالجة
-        }, 4000);
-    }
+        <button class="btn-play" onclick="playMusic()">تشغيل اللحن اليمني 🎶</button>
+        
+        <audio id="musicPlayer" controls>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        </audio>
+
+        <div id="status">جاري الاتصال بـ Pi...</div>
+    </div>
+
+    <script>
+        // تهيئة Pi SDK
+        window.onload = function() {
+            try {
+                Pi.init({ version: "2.0", sandbox: true });
+                document.getElementById('status').innerText = "متصل بنجاح ✅";
+            } catch(e) {
+                document.getElementById('status').innerText = "وضع المعاينة";
+            }
+        };
+
+        function playMusic() {
+            var audio = document.getElementById('musicPlayer');
+            audio.style.display = "block"; // إظهار الزر عند الضغط
+            audio.play(); // بدء التشغيل
+            alert("جاري تشغيل أوتار العود...");
+        }
+    </script>
+</body>
+</html>
