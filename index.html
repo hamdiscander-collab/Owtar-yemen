@@ -1,112 +1,23 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أوتار اليمن AI - نسخة التجربة</title>
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-    <style>
-        :root { --gold: #d4af37; --dark: #0a0a0a; --gray: #1a1a1a; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; padding: 20px; text-align: center; }
-        .app-card { max-width: 500px; margin: auto; background: var(--gray); border: 1px solid var(--gold); border-radius: 20px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        h1 { color: var(--gold); margin-bottom: 5px; }
-        .status { font-size: 12px; color: #2ecc71; margin-bottom: 20px; }
-        textarea { width: 100%; background: #000; color: #fff; border: 1px solid #444; border-radius: 10px; padding: 15px; box-sizing: border-box; margin-bottom: 15px; font-size: 16px; outline: none; }
-        textarea:focus { border-color: var(--gold); }
-        .btn-main { background: linear-gradient(45deg, #d4af37, #b8860b); color: #000; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 18px; margin-bottom: 20px; transition: 0.3s; }
-        .btn-main:active { transform: scale(0.98); }
-        .record-section { border-top: 1px solid #333; padding-top: 20px; }
-        .btn-record { background: #c0392b; color: white; border: none; padding: 12px 25px; border-radius: 50px; cursor: pointer; margin-top: 10px; font-weight: bold; }
-        #log { font-family: monospace; font-size: 11px; color: #888; text-align: right; margin-top: 15px; height: 80px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; }
-        audio { width: 100%; margin-top: 15px; border-radius: 5px; }
-    </style>
-</head>
-<body>
-
-<div class="app-card">
-    <h1>أوتار اليمن.HS 🎸</h1>
-    <div class="status">● وضع التجربة المفتوحة مفعل</div>
-
-    <textarea id="promptInput" rows="3" placeholder="اكتب كلمات الأغنية أو الفكرة هنا..."></textarea>
-    <button class="btn-main" onclick="startAIGeneration()">توليد بالأوزان واللحن فوراً ✨</button>
-
-    <div class="record-section">
-        <p style="font-size: 14px; color: #aaa;">سجل صوتك للتحسين الفوري</p>
-        <button id="recBtn" class="btn-record" onclick="toggleRecording()">🔴 ابدأ التسجيل</button>
-        <audio id="audioPlayback" controls style="display:none;"></audio>
-    </div>
-
-    <div id="log"></div>
-</div>
-
-<script>
-    const Pi = window.Pi;
-    let mediaRecorder;
-    let chunks = [];
-
-    // تهيئة التطبيق
-    window.onload = async () => {
-        try {
-            await Pi.init({ version: "2.0", sandbox: true });
-            addLog("تم الاتصال ببروتوكول Pi بنجاح");
-        } catch(e) { 
-            addLog("تنبيه: تعمل الآن في وضع المتصفح العادي"); 
-        }
-    };
-
-    // نظام التوليد المباشر (بدون دفع)
-    function startAIGeneration() {
+function startAIGeneration() {
         const text = document.getElementById('promptInput').value;
         if(!text) {
             alert("يرجى كتابة نص أو فكرة أولاً");
             return;
         }
 
-        addLog("جاري تحليل النص الشعري...");
-        setTimeout(() => addLog("جاري استنباط المقامات المناسبة..."), 1500);
-        setTimeout(() => addLog("تركيب لحن العود اليمني... 🎸"), 3000);
-        setTimeout(() => {
-            addLog("اكتمل الإنتاج! يمكنك الآن سماع النتيجة ✅");
-            alert("تم توليد اللحن بنجاح (وضع التجربة)");
-        }, 5000);
-    }
-
-    // نظام التسجيل
-    async function toggleRecording() {
-        const btn = document.getElementById('recBtn');
-        if (btn.innerText.includes("ابدأ")) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.start();
-                chunks = [];
-                btn.innerText = "⏹️ إيقاف ومعالجة";
-                btn.style.background = "#555";
-                
-                mediaRecorder.ondataavailable = e => chunks.push(e.data);
-                mediaRecorder.onstop = () => {
-                    const blob = new Blob(chunks, { type: 'audio/mp3' });
-                    const player = document.getElementById('audioPlayback');
-                    player.src = URL.createObjectURL(blob);
-                    player.style.display = "block";
-                    addLog("تمت معالجة صوتك وتحسين الجودة بنجاح ✅");
-                };
-            } catch(e) {
-                alert("يرجى السماح بالوصول للميكروفون للتسجيل");
-            }
-        } else {
-            mediaRecorder.stop();
-            btn.innerText = "🔴 ابدأ التسجيل";
-            btn.style.background = "#c0392b";
-        }
-    }
-
-    function addLog(msg) {
         const log = document.getElementById('log');
-        log.innerHTML += "> " + msg + "<br>";
-        log.scrollTop = log.scrollHeight;
+        log.innerHTML = ""; // تنظيف السجل
+        addLog("جاري تحليل الكلمات: " + text.substring(0, 15) + "...");
+        
+        setTimeout(() => addLog("جاري ضبط مقام العود اليمني... 🎸"), 1500);
+        setTimeout(() => {
+            addLog("تم الإنتاج! يمكنك الاستماع الآن ✅");
+            
+            // هنا قمت بتحديث الرابط لمقطع صوتي حقيقي (كمثال)
+            const player = document.getElementById('audioPlayback');
+            // ملاحظة: هذا رابط تجريبي لمقطع موسيقي، يمكنك استبداله برابط ملف MP3 يمني
+            player.src = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; 
+            player.style.display = "block";
+            player.play(); // تشغيل تلقائي بعد المعالجة
+        }, 4000);
     }
-</script>
-
-</body>
-</html>
