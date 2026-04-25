@@ -3,88 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أوتار اليمن - استوديو الذكاء الاصطناعي</title>
-    
+    <title>أوتار اليمن - Owtar Yemen.HS</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #0d1b2a;
-            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #d4af37; /* لون ذهبي */
             text-align: center;
             padding: 20px;
         }
         .container {
-            margin-top: 50px;
-            border: 1px solid #c9ada7;
-            padding: 20px;
+            border: 2px solid #d4af37;
             border-radius: 15px;
+            padding: 20px;
+            margin-top: 50px;
+            background-color: #262626;
         }
-        .btn {
-            background-color: #e09f3e;
-            color: black;
-            padding: 10px 20px;
+        .status-badge {
+            background-color: #28a745;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        button {
+            background-color: #d4af37;
+            color: #1a1a1a;
             border: none;
-            border-radius: 5px;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
+            margin-top: 20px;
         }
-        #status { color: #8ecae6; margin-top: 10px; }
-        footer { margin-top: 30px; font-size: 0.8em; opacity: 0.7; }
+        button:hover { background-color: #f1c40f; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>أوتار اليمن 🎸</h1>
-        <p>استوديو تحويل النص إلى أغاني بالعود اليمني</p>
+        <h1>أوتار اليمن.HS 🎸</h1>
+        <p>استوديو الذكاء الاصطناعي للفن اليمني الأصيل</p>
+        <div id="status">جاري الاتصال بشبكة Pi...</div>
         
-        <div id="user-info">
-            <p>مرحباً بك في عالم الفن اليمني الأصيل</p>
+        <hr style="border: 0.5px solid #444; margin: 20px 0;">
+        
+        <div id="user-info" style="display:none;">
+            <p>أهلاً بك يا <span id="username" style="color: #fff;"></span></p>
+            <button onclick="generateMusic()">توليد نغمة عود بالذكاء الاصطناعي</button>
         </div>
-
-        <button class="btn" onclick="startStudio()">ابدأ الإنتاج الآن</button>
-        <p id="status">جاري الاتصال بـ Pi Network...</p>
     </div>
 
-    <footer>
-        تطوير: hamdiscander &copy; 2026
-    </footer>
-
     <script>
-        // 1. تهيئة الـ SDK
         const Pi = window.Pi;
         
-        try {
-            // ملاحظة: sandbox: true ضرورية جداً في مرحلة التجربة لمنع الصفحة البيضاء
-            Pi.init({ version: "2.0", sandbox: true });
-            document.getElementById('status').innerText = "متصل بشبكة Pi ✅";
-
-            // 2. طلب تسجيل الدخول (Authentication)
-            // هذا يضمن أن التطبيق لا يفتح إلا لمستخدمي Pi
-            const scopes = ['username', 'payments'];
-            
-            function onIncompletePaymentFound(payment) {
-                console.log("هناك عملية دفع معلقة:", payment);
-            };
-
-            Pi.authenticate(scopes, onIncompletePaymentFound).then(function(auth) {
-                console.log("تم تسجيل الدخول بنجاح:", auth.user.username);
-                document.getElementById('user-info').innerHTML = `<p>أهلاً يا <strong>${auth.user.username}</strong>، استوديو العود جاهز لك.</p>`;
-            }).catch(function(error) {
-                console.error("خطأ في تسجيل الدخول:", error);
-                document.getElementById('status').innerText = "يرجى فتح التطبيق من متصفح Pi Browser.";
-            });
-
-        } catch (err) {
-            console.error("فشل تهيئة SDK:", err);
-            document.getElementById('status').innerText = "خطأ في الاتصال بالشبكة.";
+        async function initPi() {
+            try {
+                // تفعيل وضع Sandbox للمطورين
+                await Pi.init({ version: "2.0", sandbox: true });
+                
+                // طلب تسجيل الدخول للحصول على اسم المستخدم
+                const scopes = ['username'];
+                const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+                
+                document.getElementById('status').innerHTML = '<span class="status-badge">متصل بشبكة Pi ✅</span>';
+                document.getElementById('user-info').style.display = 'block';
+                document.getElementById('username').innerText = auth.user.username;
+                
+            } catch (err) {
+                document.getElementById('status').innerHTML = 'خطأ في الاتصال: تأكد من فتحه داخل Pi Browser';
+                console.error(err);
+            }
         }
 
-        function startStudio() {
-            alert("تم تفعيل استوديو أوتار اليمن! جاهز لتحويل النص إلى لحن عود.");
+        function onIncompletePaymentFound(payment) {
+            console.log("هناك عملية دفع غير مكتملة", payment);
+        };
+
+        function generateMusic() {
+            alert("جاري تحضير أوتار العود... (هذه الميزة ستعمل بعد ربط الـ API)");
         }
+
+        // تشغيل التهيئة عند تحميل الصفحة
+        window.onload = initPi;
     </script>
 </body>
 </html>
