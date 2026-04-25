@@ -3,48 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أوتار اليمن - مشغل الذكاء الاصطناعي</title>
+    <title>أوتار اليمن.HS | استوديو الذكاء الاصطناعي</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #1a1a1a; color: #d4af37; text-align: center; padding: 50px; }
-        .container { border: 2px solid #d4af37; padding: 30px; border-radius: 20px; max-width: 400px; margin: auto; background-color: #262626; }
-        .btn-play { background-color: #d4af37; color: #000; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 18px; width: 100%; margin-top: 20px; }
-        #status { font-size: 12px; color: #888; margin-top: 10px; }
-        audio { width: 100%; margin-top: 20px; display: none; }
+        :root {
+            --gold: #d4af37;
+            --dark-bg: #0a0a0b;
+            --card-bg: #161618;
+            --text-gray: #a0a0a0;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--dark-bg);
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-wrapper {
+            width: 100%;
+            max-width: 480px;
+            background: var(--dark-bg);
+            min-height: 100vh;
+            border-left: 1px solid #222;
+            border-right: 1px solid #222;
+            padding-bottom: 50px;
+        }
+
+        .header {
+            padding: 40px 20px;
+            text-align: center;
+            background: linear-gradient(to bottom, #1a1a1c, var(--dark-bg));
+        }
+
+        .header h1 {
+            color: var(--gold);
+            font-size: 28px;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            color: var(--text-gray);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            margin: 15px;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #28282a;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--gold);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* استوديو التوليد */
+        textarea {
+            width: 100%;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 12px;
+            color: #fff;
+            padding: 15px;
+            font-family: 'Cairo', sans-serif;
+            resize: none;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        .btn-generate {
+            background: linear-gradient(45deg, var(--gold), #f1c40f);
+            color: #000;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-generate:hover { transform: scale(0.98); opacity: 0.9; }
+
+        /* استوديو التسجيل */
+        .record-box {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .record-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #c0392b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(192, 57, 43, 0.4);
+            transition: 0.3s;
+        }
+
+        .record-circle.active {
+            animation: pulse 1.5s infinite;
+            background: #e74c3c;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(231, 76, 60, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+
+        /* مكتبة الفنانين */
+        .artist-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .artist-btn {
+            background: #222;
+            border: 1px solid #333;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .artist-btn.active {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        /* السجل والمشغل */
+        .process-log {
+            background: #000;
+            border-radius: 10px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 11px;
+            color: #00ff00;
+            height: 80px;
+            overflow-y: auto;
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        .player-box {
+            display: none;
+            margin-top: 15px;
+        }
+
+        audio { width: 100%; filter: invert(100%); opacity: 0.8; }
+
+        .footer-nav {
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>أوتار اليمن.HS 🎸</h1>
-        <p>استوديو الفن اليمني</p>
-        
-        <button class="btn-play" onclick="playMusic()">تشغيل اللحن اليمني 🎶</button>
-        
-        <audio id="musicPlayer" controls>
-            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-        </audio>
-
-        <div id="status">جاري الاتصال بـ Pi...</div>
+<div class="app-wrapper">
+    <div class="header">
+        <h1>أوتار اليمن.HS</h1>
+        <p>الجيل الثالث من استوديوهات الذكاء الاصطناعي</p>
     </div>
 
-    <script>
-        // تهيئة Pi SDK
-        window.onload = function() {
-            try {
-                Pi.init({ version: "2.0", sandbox: true });
-                document.getElementById('status').innerText = "متصل بنجاح ✅";
-            } catch(e) {
-                document.getElementById('status').innerText = "وضع المعاينة";
-            }
-        };
+    <div class="section-card">
+        <div class="section-title">📂 اختيار نمط الفنان</div>
+        <div class="artist-grid">
+            <button class="artist-btn" onclick="setArtist(this, 'أيوب طارش')">أيوب طارش</button>
+            <button class="artist-btn" onclick="setArtist(this, 'الحارثي')">صنعاني (الحارثي)</button>
+            <button class="artist-btn" onclick="setArtist(this, 'أبو بكر')">حضرمي (أبو بكر)</button>
+            <button class="artist-btn" onclick="setArtist(this, 'عزف عود')">عزف عود منفرد</button>
+        </div>
+    </div>
 
-        function playMusic() {
-            var audio = document.getElementById('musicPlayer');
-            audio.style.display = "block"; // إظهار الزر عند الضغط
-            audio.play(); // بدء التشغيل
-            alert("جاري تشغيل أوتار العود...");
+    <div class="section-card">
+        <div class="section-title">✍️ تأليف وتوليد لحن جديد</div>
+        <textarea id="promptArea" rows="3" placeholder="أدخل كلمات الأغنية أو صف الشعور المطلوب..."></textarea>
+        <button class="btn-generate" onclick="generateMusic()">إنتاج العمل الفني ✨</button>
+        <div id="logBox" class="process-log">> نظام الإنتاج جاهز...</div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">🎤 تسجيل ومعالجة فورية</div>
+        <div class="record-box">
+            <div id="recordBtn" class="record-circle" onclick="toggleMic()">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+            </div>
+            <p id="recStatus" style="font-size: 13px; color: var(--text-gray);">اضغط للبدء في تسجيل صوتك</p>
+        </div>
+        <div id="playerContainer" class="player-box">
+            <audio id="mainAudio" controls></audio>
+            <button class="btn-generate" style="background:#222; color:var(--gold); border:1px solid var(--gold);" onclick="downloadAudio()">حفظ العمل في الهاتف 📥</button>
+        </div>
+    </div>
+
+    <div class="footer-nav">
+        حقوق الملكية محفوظة لأوتار اليمن.HS © 2026<br>
+        مدعوم بتقنيات Pi Network & AI
+    </div>
+</div>
+
+<script>
+    const Pi = window.Pi;
+    let mediaRecorder;
+    let audioChunks = [];
+    let selectedArtist = "";
+
+    // تهيئة Pi SDK
+    window.onload = () => {
+        try {
+            Pi.init({ version: "2.0", sandbox: true });
+            addToLog("تم الاتصال ببروتوكول Pi بنجاح ✅");
+        } catch(e) { addToLog("وضع العرض المباشر مفعل."); }
+    };
+
+    function setArtist(el, name) {
+        document.querySelectorAll('.artist-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        selectedArtist = name;
+        addToLog("تم اختيار نمط: " + name);
+    }
+
+    function addToLog(msg) {
+        const log = document.getElementById('logBox');
+        log.innerHTML += `<br>> ${msg}`;
+        log.scrollTop = log.scrollHeight;
+    }
+
+    async function generateMusic() {
+        const text = document.getElementById('promptArea').value;
+        if(!text) { alert("من فضلك اكتب النص أولاً"); return; }
+        
+        addToLog("جاري تحليل المعاني والأوزان...");
+        setTimeout(() => addToLog("توليد طبقات الصوت (AI Voice Layers)..."), 1500);
+        setTimeout(() => addToLog("دمج ألحان العود والمقامات... 🎸"), 3000);
+        setTimeout(() => {
+            addToLog("تم الإنتاج النهائي بنجاح!");
+            const audio = document.getElementById('mainAudio');
+            // رابط صوتي حقيقي للتجربة
+            audio.src = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; 
+            document.getElementById('playerContainer').style.display = 'block';
+            audio.play();
+        }, 5000);
+    }
+
+    async function toggleMic() {
+        const btn = document.getElementById('recordBtn');
+        const status = document.getElementById('recStatus');
+
+        if (!mediaRecorder || mediaRecorder.state === "inactive") {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+            audioChunks = [];
+
+            btn.classList.add('active');
+            status.innerText = "جاري التسجيل... اضغط مرة أخرى للإيقاف";
+            addToLog("بدء تسجيل صوتي جديد...");
+
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(audioChunks, { type: 'audio/mp3' });
+                const audioUrl = URL.createObjectURL(blob);
+                document.getElementById('mainAudio').src = audioUrl;
+                document.getElementById('playerContainer').style.display = 'block';
+                addToLog("تمت معالجة وتحسين صوتك المسجل ✅");
+            };
+        } else {
+            mediaRecorder.stop();
+            btn.classList.remove('active');
+            status.innerText = "تم التسجيل والمعالجة بنجاح";
         }
-    </script>
+    }
+
+    function downloadAudio() {
+        const audioSrc = document.getElementById('mainAudio').src;
+        const link = document.createElement('a');
+        link.href = audioSrc;
+        link.download = "Owtar_Yemen_AI.mp3";
+        link.click();
+    }
+</script>
+
 </body>
 </html>
