@@ -1,1 +1,2 @@
 5b85b9eed5547c48add59d675c9d18f44133f732d9b75ed8ed865148c9c7a505e6b01872d2c8a58b7918018b8f86bb9f1d49c0b3d9888dd8950bb4b35d3514bc
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
