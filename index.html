@@ -1,60 +1,143 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <title>Owtar Yemen .HR</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owtar Yemen</title>
 
-  <!-- Pi SDK -->
-  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
-  <script>
-    // تهيئة Pi SDK
-    Pi.init({ version: "2.0" });
+<style>
+body {
+  font-family: Arial;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
+  text-align: center;
+  margin: 0;
+}
 
-    // تسجيل الدخول
-    async function login() {
-      const scopes = ['username', 'payments'];
+header {
+  padding: 20px;
+  font-size: 26px;
+  background: #0f3460;
+}
 
-      try {
-        const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+.container {
+  padding: 20px;
+}
 
-        console.log(auth);
+textarea {
+  width: 90%;
+  height: 120px;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 16px;
+}
 
-        document.getElementById("status").innerText =
-          "مرحباً " + auth.user.username;
+select, button {
+  margin: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+}
 
-      } catch (err) {
-        console.error(err);
-        document.getElementById("status").innerText =
-          "حدث خطأ في تسجيل الدخول";
-      }
-    }
+button {
+  background: #e94560;
+  color: white;
+  cursor: pointer;
+}
 
-    function onIncompletePaymentFound(payment) {
-      console.log("Payment not completed:", payment);
-    }
+.card {
+  background: #0f3460;
+  padding: 15px;
+  border-radius: 15px;
+  margin-top: 20px;
+}
 
-    // اختبار التطبيق
-    function testApp() {
-      document.getElementById("debug").innerText =
-        "JavaScript يعمل بشكل صحيح ✔️";
-    }
-  </script>
-
+</style>
 </head>
 
-<body style="text-align:center; font-family:Arial; padding:40px;">
+<body>
 
-  <h2>Owtar Yemen .HR</h2>
+<header>🎵 أوتار اليمن</header>
 
-  <p id="debug">جاهز للتشغيل...</p>
+<div class="container">
 
-  <button onclick="testApp()">اختبار التطبيق</button>
-  <br><br>
+<button onclick="login()">🔐 تسجيل الدخول عبر Pi</button>
+<p id="user"></p>
 
-  <button onclick="login()">تسجيل الدخول Pi</button>
+<textarea id="lyrics" placeholder="اكتب كلماتك هنا..."></textarea>
 
-  <p id="status"></p>
+<br>
+
+<select id="maqam">
+  <option value="صنعاني">مقام صنعاني</option>
+  <option value="لحجي">مقام لحجي</option>
+  <option value="عدني">مقام عدني</option>
+  <option value="حضرموتي">مقام حضرموتي</option>
+</select>
+
+<br>
+
+<button onclick="generateSong()">🎶 تحويل إلى أغنية</button>
+
+<div class="card">
+  <h3>🎼 النتيجة</h3>
+  <p id="output"></p>
+  <button onclick="playSong()">▶ تشغيل الصوت</button>
+</div>
+
+</div>
+
+<script>
+
+// Pi Init
+Pi.init({ version: "2.0", sandbox: true });
+
+// Login
+async function login() {
+  try {
+    const auth = await Pi.authenticate(['username'], onIncompletePaymentFound);
+    document.getElementById("user").innerText = "👤 " + auth.user.username;
+  } catch (e) {
+    alert("خطأ في تسجيل الدخول");
+  }
+}
+
+function onIncompletePaymentFound(payment) {
+  console.log(payment);
+}
+
+// Generate Song
+function generateSong() {
+  let text = document.getElementById("lyrics").value;
+  let maqam = document.getElementById("maqam").value;
+
+  if (!text) {
+    alert("اكتب كلمات أولاً");
+    return;
+  }
+
+  let styled = `🎶 [${maqam}]
+${text}
+
+✨ تم تحويل النص إلى نمط غنائي يمني بإيقاع العود`;
+
+  document.getElementById("output").innerText = styled;
+}
+
+// Play Song (TTS)
+function playSong() {
+  let text = document.getElementById("output").innerText;
+
+  let speech = new SpeechSynthesisUtterance(text);
+  speech.lang = "ar-SA";
+
+  window.speechSynthesis.speak(speech);
+}
+
+</script>
 
 </body>
 </html>
