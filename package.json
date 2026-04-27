@@ -1,0 +1,12 @@
+{
+  "name": "owtar-yemen",
+  "version": "1.0.0",
+  "description": "Owtar Yemen App",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
