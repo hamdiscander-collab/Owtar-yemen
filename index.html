@@ -1,21 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar">
 <head>
+  <meta charset="UTF-8" />
   <title>Owtar Yemen .HR</title>
+
+  <!-- Pi SDK -->
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
+  <script>
+    // تهيئة Pi SDK
+    Pi.init({ version: "2.0" });
+
+    // تسجيل الدخول
+    async function login() {
+      const scopes = ['username', 'payments'];
+
+      try {
+        const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+
+        console.log(auth);
+
+        document.getElementById("status").innerText =
+          "مرحباً " + auth.user.username;
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById("status").innerText =
+          "حدث خطأ في تسجيل الدخول";
+      }
+    }
+
+    function onIncompletePaymentFound(payment) {
+      console.log("Payment not completed:", payment);
+    }
+
+    // اختبار التطبيق
+    function testApp() {
+      document.getElementById("debug").innerText =
+        "JavaScript يعمل بشكل صحيح ✔️";
+    }
+  </script>
+
 </head>
-<body>
 
-<h2>App is Running ✅</h2>
+<body style="text-align:center; font-family:Arial; padding:40px;">
 
-<button onclick="test()">Test Function</button>
+  <h2>Owtar Yemen .HR</h2>
 
-<p id="result"></p>
+  <p id="debug">جاهز للتشغيل...</p>
 
-<script>
-function test() {
-  document.getElementById("result").innerText = "JavaScript يعمل بشكل صحيح ✔️";
-}
-</script>
+  <button onclick="testApp()">اختبار التطبيق</button>
+  <br><br>
+
+  <button onclick="login()">تسجيل الدخول Pi</button>
+
+  <p id="status"></p>
 
 </body>
 </html>
