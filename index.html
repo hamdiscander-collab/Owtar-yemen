@@ -2,62 +2,62 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أوتار اليمن.HS | Pro Max</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>أوتار اليمن.HS | الإصدار الملكي</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <style>
-        :root { --gold: #d4af37; --black: #050505; --card: #121214; }
-        body { background: var(--black); color: #e0e0e0; font-family: 'Cairo', sans-serif; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: auto; }
-        header { text-align: center; padding: 30px 0; border-bottom: 1px solid rgba(212,175,55,0.2); }
-        .glass-card { background: var(--card); border: 1px solid #222; border-radius: 25px; padding: 25px; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        textarea { width: 100%; background: #000; border: 1px solid #333; border-radius: 15px; color: #fff; padding: 15px; font-family: 'Cairo'; font-size: 16px; outline: none; margin-top: 15px; box-sizing: border-box; }
-        .btn-main { background: linear-gradient(45deg, var(--gold), #f1c40f); color: #000; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; font-size: 18px; cursor: pointer; margin-top: 20px; transition: 0.3s; }
-        .btn-main:active { transform: scale(0.95); }
-        .terminal { background: #000; border-radius: 15px; padding: 15px; font-family: monospace; font-size: 12px; color: #00ff88; height: 150px; overflow-y: auto; margin-top: 20px; border: 1px solid #1a1a1a; text-align: right; }
-        .player-box { display: none; margin-top: 20px; padding: 20px; background: #1a1a1a; border-radius: 20px; border: 1px solid var(--gold); }
-        audio { width: 100%; filter: invert(1); }
+        :root { --gold: #d4af37; --dark: #050505; --card: #121214; --green: #00ff88; }
+        body { background: var(--dark); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; padding: 15px; }
+        .app-card { max-width: 500px; margin: 20px auto; background: var(--card); border: 1px solid #222; border-radius: 30px; padding: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
+        h1 { color: var(--gold); text-align: center; font-size: 26px; margin-bottom: 5px; }
+        .status-badge { text-align: center; font-size: 10px; color: #555; letter-spacing: 2px; margin-bottom: 20px; }
+        textarea { width: 100%; background: #000; border: 1px solid #333; border-radius: 18px; color: #fff; padding: 15px; font-family: 'Cairo'; font-size: 16px; outline: none; margin-top: 10px; box-sizing: border-box; }
+        textarea:focus { border-color: var(--gold); }
+        .btn-produce { width: 100%; background: linear-gradient(45deg, var(--gold), #b8860b); color: #000; border: none; padding: 18px; border-radius: 15px; font-weight: 900; font-size: 18px; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+        .btn-produce:disabled { opacity: 0.5; filter: grayscale(1); }
+        .terminal { background: #000; border: 1px solid #1a1a1a; border-radius: 15px; padding: 15px; height: 120px; overflow-y: auto; font-family: monospace; font-size: 11px; color: var(--green); margin-top: 20px; line-height: 1.6; }
+        .player-box { display: none; margin-top: 20px; padding: 15px; background: #1a1a1a; border: 1px solid var(--gold); border-radius: 20px; animation: slideUp 0.5s ease; }
+        audio { width: 100%; filter: invert(1); margin-top: 10px; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1 style="color:var(--gold); margin:0;">أوتار اليمن.HS 🎸</h1>
-        <p style="color:#666; font-size:12px;">استوديو الذكاء الاصطناعي - النسخة المستقرة</p>
-    </header>
+<div class="app-card">
+    <h1>أوتار اليمن.HS 🎸</h1>
+    <div class="status-badge">AI MUSICAL STUDIO PRO</div>
 
-    <main class="glass-card">
-        <div style="color:var(--gold); font-weight:bold;">✍️ اكتب وصف اللحن:</div>
-        <textarea id="promptArea" rows="3" placeholder="مثال: عود يمني حزين بمقام الراست..."></textarea>
-        
-        <button id="actionBtn" class="btn-main" onclick="startWork()">بدء الإنتاج الفني ✨</button>
-        
-        <div id="terminal" class="terminal">> نظام أوتار جاهز...</div>
-    </main>
+    <div style="font-size: 14px; color: var(--gold); margin-right: 5px;">✍️ وصف اللحن المطلوب:</div>
+    <textarea id="promptIn" rows="3" placeholder="مثال: عود صنعاني مبهج بجودة عالية..."></textarea>
+    
+    <button id="execBtn" class="btn-produce" onclick="startProduction()">بدء الإنتاج الذكي ✨</button>
 
-    <div id="resultBox" class="player-box">
-        <div style="color:var(--gold); margin-bottom:10px;">🎧 اللحن المولد:</div>
-        <audio id="audioOut" controls></audio>
+    <div id="logBox" class="terminal">> نظام أوتار جاهز وبانتظار أمرك...</div>
+
+    <div id="audioSection" class="player-box">
+        <div style="color:var(--gold); font-size: 12px; text-align: center;">تم الإنتاج بنجاح! استمع الآن 👇</div>
+        <audio id="mainAudio" controls></audio>
     </div>
 </div>
 
 <script>
-    function addLog(msg) {
-        const term = document.getElementById('terminal');
-        const time = new Date().toLocaleTimeString();
-        term.innerHTML += `<br><span style="color:#444">[${time}]</span> > ${msg}`;
-        term.scrollTop = term.scrollHeight;
+    function updateLog(msg) {
+        const log = document.getElementById('logBox');
+        const now = new Date().toLocaleTimeString();
+        log.innerHTML += `<br><span style="color:#444">[${now}]</span> > ${msg}`;
+        log.scrollTop = log.scrollHeight;
     }
 
-    async function startWork() {
-        const prompt = document.getElementById('promptArea').value;
-        const btn = document.getElementById('actionBtn');
-        if(!prompt) return alert("اكتب وصفاً أولاً");
+    async function startProduction() {
+        const prompt = document.getElementById('promptIn').value;
+        const btn = document.getElementById('execBtn');
+        const audioSection = document.getElementById('audioSection');
+
+        if(!prompt) return alert("يرجى كتابة وصف اللحن أولاً");
 
         btn.disabled = true;
-        addLog("جاري الاتصال بـ Vercel لاستخدام مفتاح HF_Log...");
+        audioSection.style.display = 'none';
+        updateLog("جاري محاولة الاتصال بـ Vercel عبر المفتاح HF_Log...");
 
         try {
             const response = await fetch('/api/generate', {
@@ -66,25 +66,31 @@
                 body: JSON.stringify({ prompt: prompt })
             });
 
+            // التعامل مع السيرفر في وضع الاستعداد
             if (response.status === 503) {
-                addLog("تنبيه: السيرفر نائم.. سيتم إيقاظه تلقائياً خلال 20 ثانية ⏳");
-                setTimeout(startWork, 20000);
+                updateLog("تنبيه: مصنع الألحان يستعد للعمل.. سأحاول مجدداً خلال 15 ثانية ⏳");
+                setTimeout(startProduction, 15000);
                 return;
             }
 
-            if (!response.ok) throw new Error("فشل الاتصال");
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "خطأ في الاتصال");
+            }
 
-            addLog("تم التوليد بنجاح! جاري تحميل النغمات...");
+            updateLog("نجح الاتصال! جاري استقبال النغمات الموسيقية...");
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
-            const audio = document.getElementById('audioOut');
-            audio.src = url;
-            document.getElementById('resultBox').style.display = 'block';
-            audio.play();
-            addLog("اكتمل العمل الفني ✅");
+            
+            const player = document.getElementById('mainAudio');
+            player.src = url;
+            audioSection.style.display = 'block';
+            player.play();
+            updateLog("اكتمل الإنتاج الفني بنجاح! ✅");
 
         } catch (e) {
-            addLog("خطأ فني: تأكد من مفتاح HF_Log في Vercel وعمل Redeploy.");
+            updateLog("فشل: " + e.message);
+            updateLog("تلميح: تأكد من اسم HF_Log في Vercel وقم بعمل Redeploy.");
         } finally {
             btn.disabled = false;
         }
