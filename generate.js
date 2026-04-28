@@ -2,7 +2,7 @@ import http from 'http';
 import fetch from 'node-fetch';
 
 const handler = async (req, res) => {
-    // إعدادات العناوين للسماح بالوصول (CORS)
+    // إعدادات CORS للسماح لصفحة index.html بالاتصال بالسيرفر
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -18,7 +18,8 @@ const handler = async (req, res) => {
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', async () => {
             try {
-                const { prompt } = JSON.parse(body);
+                const parsedBody = JSON.parse(body);
+                const prompt = parsedBody.prompt;
                 const HF_SECRET_KEY = process.env.Good;
 
                 const response = await fetch(
@@ -35,18 +36,18 @@ const handler = async (req, res) => {
                 res.end(Buffer.from(arrayBuffer));
             } catch (error) {
                 res.writeHead(500);
-                res.end(JSON.stringify({ error: "خطأ في السيرفر" }));
+                res.end(JSON.stringify({ error: "خطأ في السيرفر الداخلي" }));
             }
         });
     } else {
-        res.writeHead(404);
-        res.end();
+        // في حال تم فتح الرابط مباشرة من المتصفح
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end('<h1>سيرفر أوتار اليمن يعمل بنجاح! ✅</h1>');
     }
 };
 
-// تشغيل السيرفر على المنفذ الذي يطلبه Render
 const server = http.createServer(handler);
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`Server is running on port ${port}`);
 });
