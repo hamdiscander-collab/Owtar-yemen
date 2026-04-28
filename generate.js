@@ -1,40 +1,52 @@
-// api/generate.js
-export default async function handler(req, res) {
-    if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
+import http from 'http';
+import fetch from 'node-fetch';
 
-    const { prompt } = req.body;
-    
-    // التعديل هنا: سحب الرمز باستخدام الاسم الجديد الذي اخترته (Good)
-    const HF_SECRET_KEY = process.env.Good; 
+const handler = async (req, res) => {
+    // إعدادات العناوين للسماح بالوصول (CORS)
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    if (!HF_SECRET_KEY) {
-        return res.status(500).json({ error: "النظام لا يجد رمزاً باسم Good في Vercel" });
+    if (req.method === 'OPTIONS') {
+        res.writeHead(200);
+        res.end();
+        return;
     }
 
-    try {
-        const response = await fetch(
-            "https://api-inference.huggingface.co/models/facebook/musicgen-small",
-            {
-                headers: { 
-                    "Authorization": `Bearer ${HF_SECRET_KEY}`,
-                    "Content-Type": "application/json"
-                },
-                method: "POST",
-                body: JSON.stringify({ "inputs": "Yemeni traditional music, Oud, " + prompt }),
+    if (req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', async () => {
+            try {
+                const { prompt } = JSON.parse(body);
+                const HF_SECRET_KEY = process.env.Good;
+
+                const response = await fetch(
+                    "https://api-inference.huggingface.co/models/facebook/musicgen-small",
+                    {
+                        headers: { "Authorization": `Bearer ${HF_SECRET_KEY}` },
+                        method: "POST",
+                        body: JSON.stringify({ "inputs": "Yemeni Oud music, " + prompt }),
+                    }
+                );
+
+                const arrayBuffer = await response.arrayBuffer();
+                res.writeHead(200, { 'Content-Type': 'audio/mpeg' });
+                res.end(Buffer.from(arrayBuffer));
+            } catch (error) {
+                res.writeHead(500);
+                res.end(JSON.stringify({ error: "خطأ في السيرفر" }));
             }
-        );
-
-        if (response.status === 503) {
-            return res.status(503).json({ error: "السيرفر يستيقظ حالياً" });
-        }
-
-        if (!response.ok) throw new Error("فشل الاتصال بمصنع الألحان");
-
-        const arrayBuffer = await response.arrayBuffer();
-        res.setHeader('Content-Type', 'audio/mpeg');
-        res.send(Buffer.from(arrayBuffer));
-
-    } catch (error) {
-        res.status(500).json({ error: "حدث خطأ في الجسر البرمجي" });
+        });
+    } else {
+        res.writeHead(404);
+        res.end();
     }
-}
+};
+
+// تشغيل السيرفر على المنفذ الذي يطلبه Render
+const server = http.createServer(handler);
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
