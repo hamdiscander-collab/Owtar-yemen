@@ -1,16 +1,21 @@
 import http from 'http';
 import fetch from 'node-fetch';
 
-const handler = async (req, res) => {
-    // إعدادات CORS للسماح لصفحة index.html بالاتصال بالسيرفر
+const server = http.createServer(async (req, res) => {
+    // إعدادات الوصول CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    if (req.method === 'OPTIONS') {
-        res.writeHead(200);
-        res.end();
+    // --- الخطوة الجديدة: التحقق من نطاق Pi Network ---
+    if (req.url === '/validation-key.txt') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('5b85b9eed5547c48add59d675c9d18f44133f732d9b75ed8ed865148c9c7a505e6b01872d2c8a58b7918018b8f86bb9f1d49c0b3d9888dd8950bb4b35d3514bc');
         return;
+    }
+
+    if (req.method === 'OPTIONS') {
+        res.writeHead(200); res.end(); return;
     }
 
     if (req.method === 'POST') {
@@ -18,14 +23,13 @@ const handler = async (req, res) => {
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', async () => {
             try {
-                const parsedBody = JSON.parse(body);
-                const prompt = parsedBody.prompt;
-                const HF_SECRET_KEY = process.env.Good;
+                const { prompt } = JSON.parse(body);
+                const TOKEN = process.env.HF_TOKEN || process.env.Good || process.env.API_KEY;
 
                 const response = await fetch(
                     "https://api-inference.huggingface.co/models/facebook/musicgen-small",
                     {
-                        headers: { "Authorization": `Bearer ${HF_SECRET_KEY}` },
+                        headers: { "Authorization": `Bearer ${TOKEN}` },
                         method: "POST",
                         body: JSON.stringify({ "inputs": "Yemeni Oud music, " + prompt }),
                     }
@@ -35,19 +39,15 @@ const handler = async (req, res) => {
                 res.writeHead(200, { 'Content-Type': 'audio/mpeg' });
                 res.end(Buffer.from(arrayBuffer));
             } catch (error) {
-                res.writeHead(500);
-                res.end(JSON.stringify({ error: "خطأ في السيرفر الداخلي" }));
+                res.writeHead(500); res.end();
             }
         });
     } else {
-        // في حال تم فتح الرابط مباشرة من المتصفح
+        // الصفحة الرئيسية
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-        res.end('<h1>سيرفر أوتار اليمن يعمل بنجاح! ✅</h1>');
+        res.end('<h1>استوديو أوتار اليمن نشط وجاهز ✅</h1>');
     }
-};
-
-const server = http.createServer(handler);
-const port = process.env.PORT || 3000;
-server.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
 });
+
+const port = process.env.PORT || 3000;
+server.listen(port, () => { console.log(`Server running on ${port}`); });
