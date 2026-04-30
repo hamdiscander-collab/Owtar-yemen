@@ -3,85 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>أوتار اليمن | الاستوديو الذكي المتكامل</title>
-    
-    <!-- مكتبة Pi Network SDK - ضرورية جداً للعمل داخل المتصفح -->
+    <title>أوتار اليمن | الاستوديو الذكي</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-
     <style>
         :root { --gold: #D4AF37; --dark: #0A0A0B; --card: #161618; --accent: #00FF9D; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background: var(--dark); color: white; padding: 15px; overflow-x: hidden; }
+        body { background: var(--dark); color: white; padding: 15px; }
         .app-shell { max-width: 500px; margin: auto; }
-        header { text-align: center; padding: 20px 0; border-bottom: 1px solid #222; margin-bottom: 20px; }
-        .logo { font-size: 24px; font-weight: 900; color: var(--gold); letter-spacing: 2px; }
-        .studio-card { background: var(--card); border-radius: 25px; padding: 20px; border: 1px solid #222; margin-bottom: 20px; }
-        textarea { width: 100%; background: #000; border: 1px solid #333; border-radius: 15px; color: #fff; padding: 15px; font-size: 16px; outline: none; resize: none; margin: 15px 0; }
-        .btn-main { background: var(--gold); color: #000; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; font-size: 18px; cursor: pointer; transition: 0.3s; }
-        .btn-main:disabled { background: #333; color: #666; cursor: wait; }
-        #lyricsDisplay { display: none; background: rgba(0,0,0,0.3); border-radius: 15px; padding: 15px; border-right: 3px solid var(--gold); margin-top: 15px; font-size: 14px; line-height: 1.8; color: #ccc; }
-        .player-panel { display: none; background: var(--card); border-radius: 25px; padding: 20px; border: 1px solid var(--gold); text-align: center; margin-top: 20px; }
+        .studio-card { background: var(--card); border-radius: 25px; padding: 20px; border: 1px solid #222; }
+        textarea { width: 100%; background: #000; border: 1px solid #333; border-radius: 15px; color: #fff; padding: 15px; margin: 15px 0; }
+        .btn-main { background: var(--gold); color: #000; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; }
+        .player-panel { display: none; background: var(--card); border-radius: 25px; padding: 20px; border: 1px solid var(--gold); margin-top: 20px; text-align: center; }
         audio { width: 100%; margin: 15px 0; filter: invert(1); }
-        .console { background: #000; border-radius: 15px; padding: 15px; font-family: monospace; font-size: 11px; color: var(--accent); height: 100px; overflow-y: auto; margin-top: 15px; border: 1px solid #111; }
-        .user-info { font-size: 12px; color: var(--accent); margin-bottom: 10px; text-align: center; }
+        .console { background: #000; border-radius: 15px; padding: 15px; font-size: 11px; color: var(--accent); height: 100px; overflow-y: auto; margin-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="app-shell">
-    <header>
-        <div class="logo">أوتار اليمن.HS</div>
-        <div id="userGreeting" class="user-info">جاري التحقق من هوية Pi...</div>
+    <header style="text-align:center; padding:20px;">
+        <div style="font-size:24px; font-weight:900; color:var(--gold);">أوتار اليمن.HS</div>
+        <div id="userGreeting" style="font-size:12px; color:var(--accent);">جاري التحميل...</div>
     </header>
 
     <main class="studio-card">
-        <label style="font-size: 13px; color: var(--gold);">وصف اللحن وكلمات الأغنية</label>
-        <textarea id="promptIn" rows="3" placeholder="مثال: عود صنعاني مقام راست، واكتب لي كلمات عن حب اليمن"></textarea>
-        
+        <textarea id="promptIn" rows="3" placeholder="اكتب وصف اللحن هنا..."></textarea>
         <button id="execBtn" class="btn-main" onclick="processAll()">إنتاج العمل الفني ✨</button>
-
-        <div id="lyricsDisplay"></div>
-        <div id="statusLog" class="console">> نظام أوتار متصل...</div>
+        <div id="lyricsDisplay" style="display:none; margin-top:15px; color:#ccc; font-size:14px; border-right:3px solid var(--gold); padding-right:10px;"></div>
+        <div id="statusLog" class="console">> بانتظار تهيئة النظام...</div>
     </main>
 
     <section id="playerBox" class="player-panel">
-        <p style="color: var(--gold); font-weight: bold;">اللحن جاهز للاستماع</p>
         <audio id="audioMaster" controls></audio>
-        <button onclick="saveToPhone()" style="background:transparent; border:1px solid var(--gold); color:var(--gold); padding:10px; border-radius:10px; cursor:pointer; width:100%; margin-top:10px;">
-            <i class="fa-solid fa-download"></i> حفظ في الهاتف
-        </button>
+        <button onclick="saveToPhone()" style="width:100%; background:none; border:1px solid var(--gold); color:var(--gold); padding:10px; border-radius:10px; margin-top:10px;">حفظ في الهاتف</button>
     </section>
 </div>
 
 <script>
-    // 1. تهيئة Pi SDK
-    const Pi = window.Pi;
-    Pi.init({ version: "1.5", sandbox: true });
-
-    async function authenticateUser() {
-        try {
-            const scopes = ['username', 'payments'];
-            const auth = await Pi.authenticate(scopes, (payment) => {
-                console.log("Payment in progress...", payment);
-            });
-            document.getElementById('userGreeting').innerText = `مرحباً، ${auth.user.username}`;
-            log("تمت المصادقة بنجاح في شبكة Pi.");
-        } catch (err) {
-            log("خطأ في المصادقة: " + err.message);
-            document.getElementById('userGreeting').innerText = "فشل تسجيل الدخول - يرجى إعادة المحاولة";
-        }
-    }
-
-    // تشغيل المصادقة فور التحميل
-    authenticateUser();
-
-    function log(msg) {
+    const log = (msg) => {
         const con = document.getElementById('statusLog');
         con.innerHTML += `<br>> ${msg}`;
         con.scrollTop = con.scrollHeight;
+    };
+
+    // تأخير التهيئة لضمان تحميل المكتبة
+    window.onload = function() {
+        if (window.Pi) {
+            window.Pi.init({ version: "1.5", sandbox: true });
+            authenticateUser();
+        } else {
+            log("خطأ: لم يتم تحميل مكتبة Pi SDK");
+        }
+    };
+
+    async function authenticateUser() {
+        try {
+            const auth = await window.Pi.authenticate(['username'], (p) => {});
+            document.getElementById('userGreeting').innerText = `مرحباً، ${auth.user.username}`;
+            log("تم الاتصال بـ Pi Network بنجاح ✅");
+        } catch (err) {
+            log("فشل المصادقة: " + err.message);
+        }
     }
 
     async function processAll() {
@@ -90,48 +73,38 @@
         if(!prompt) return alert("يرجى كتابة وصف");
 
         btn.disabled = true;
-        log("بدء توليد النص واللحن...");
-        
-        // محاكاة توليد الكلمات
-        const lyrics = document.getElementById('lyricsDisplay');
-        lyrics.style.display = 'block';
-        lyrics.innerHTML = `<strong>كلمات الذكاء الاصطناعي:</strong><br>جاري كتابة قصيدة تتناسب مع وصفك...<br>(تم إعداد النص الفني)`;
+        log("بدء توليد اللحن (قد يستغرق 30 ثانية)...");
 
         try {
-            // الاتصال بسيرفر Render الجديد (Owtar-yemen5)
             const response = await fetch('https://owtar-yemen5.onrender.com', {
                 method: 'POST',
-                mode: 'cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ prompt: prompt })
             });
 
-            if (response.status === 503) {
-                log("السيرفر يستيقظ.. انتظر 15 ثانية...");
-                setTimeout(processAll, 15000);
-                return;
-            }
+            if (!response.ok) throw new Error("السيرفر لا يستجيب حالياً");
 
             const blob = await response.blob();
+            if (blob.size < 1000) throw new Error("ملف الصوت فارغ - تأكد من مفتاح Hugging Face");
+
             const url = URL.createObjectURL(blob);
             const audio = document.getElementById('audioMaster');
             audio.src = url;
             document.getElementById('playerBox').style.display = 'block';
-            audio.play();
-            log("اكتمل الإنتاج بنجاح ✅");
+            log("تم التوليد بنجاح! اضغط تشغيل.");
+            audio.play().catch(() => log("يرجى الضغط على زر التشغيل يدوياً"));
 
         } catch (err) {
-            log("حدث خطأ: " + err.message);
+            log("خطأ: " + err.message);
         } finally {
             btn.disabled = false;
         }
     }
 
     function saveToPhone() {
-        const url = document.getElementById('audioMaster').src;
         const a = document.createElement('a');
-        a.href = url;
-        a.download = `Owtar_Yemen_${Date.now()}.mp3`;
+        a.href = document.getElementById('audioMaster').src;
+        a.download = "Owtar_Yemen.mp3";
         a.click();
     }
 </script>
