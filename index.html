@@ -1,23 +1,61 @@
+<!-- index.html (أضف قبل </body>) -->
+
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
 <script>
-window.onload = function() {
-  if (window.Pi) {
-    Pi.init({ version: "2.0" });
+let piAuth = null;
 
-    Pi.authenticate(['username'], function(auth) {
-      console.log("User authenticated:", auth);
+// زر تسجيل الدخول اليدوي
+const loginBtn = document.createElement("button");
+loginBtn.innerText = "🔐 تسجيل الدخول بـ Pi";
+loginBtn.style.cssText = "margin-top:15px;padding:10px;border-radius:8px;background:#6c4cff;color:#fff;border:none;";
+document.body.appendChild(loginBtn);
 
-      document.body.innerHTML += `
-        <div style="color:white;margin-top:20px;">
-          👤 مرحبًا: ${auth.user.username}
-        </div>
-      `;
-    }, function(error) {
-      console.error("Auth error", error);
+// دالة تسجيل الدخول
+async function authenticatePi() {
+  try {
+    if (!window.Pi) {
+      console.error("Pi SDK not available");
+      return;
+    }
+
+    // انتظر التهيئة
+    await Pi.init({ version: "2.0" });
+
+    // تسجيل الدخول
+    piAuth = await Pi.authenticate(['username']);
+
+    console.log("Authenticated:", piAuth);
+
+    // إرسال التوكن إلى السيرفر
+    const res = await fetch("https://YOUR-SERVER.onrender.com/auth", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        accessToken: piAuth.accessToken
+      })
     });
-  } else {
-    console.log("Pi SDK not found");
+
+    const data = await res.json();
+
+    document.body.innerHTML += `
+      <div style="color:#0f0;margin-top:10px;">
+        👤 مرحبًا ${data.username}
+      </div>
+    `;
+
+  } catch (err) {
+    console.error("Pi Auth Error:", err);
   }
+}
+
+// تشغيل تلقائي عند فتح التطبيق
+window.onload = () => {
+  authenticatePi();
 };
+
+// زر تشغيل يدوي
+loginBtn.onclick = authenticatePi;
 </script>
