@@ -1,47 +1,53 @@
-<!-- index.html (أضف قبل </body>) -->
-
+<!-- Pi SDK -->
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
-<script>
-let piAuth = null;
+<script type="module">
+let authData = null;
 
-// زر تسجيل الدخول اليدوي
+// زر تسجيل دخول (سيظهر أسفل الصفحة)
 const loginBtn = document.createElement("button");
 loginBtn.innerText = "🔐 تسجيل الدخول بـ Pi";
-loginBtn.style.cssText = "margin-top:15px;padding:10px;border-radius:8px;background:#6c4cff;color:#fff;border:none;";
+loginBtn.style.cssText = `
+  margin-top:15px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#6c4cff;
+  color:#fff;
+`;
 document.body.appendChild(loginBtn);
 
 // دالة تسجيل الدخول
-async function authenticatePi() {
+async function startPiAuth() {
   try {
     if (!window.Pi) {
-      console.error("Pi SDK not available");
+      console.error("Pi SDK not loaded");
       return;
     }
 
-    // انتظر التهيئة
-    await Pi.init({ version: "2.0" });
+    // ✅ تهيئة SDK (مرة واحدة فقط)
+    await Pi.init({ version: "2.0", sandbox: true });
 
-    // تسجيل الدخول
-    piAuth = await Pi.authenticate(['username']);
+    // ✅ تسجيل الدخول
+    authData = await Pi.authenticate(['username']);
 
-    console.log("Authenticated:", piAuth);
+    console.log("Auth Success:", authData);
 
-    // إرسال التوكن إلى السيرفر
+    // ✅ إرسال التوكن للسيرفر
     const res = await fetch("https://YOUR-SERVER.onrender.com/auth", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        accessToken: piAuth.accessToken
+        accessToken: authData.accessToken
       })
     });
 
     const data = await res.json();
 
     document.body.innerHTML += `
-      <div style="color:#0f0;margin-top:10px;">
+      <div style="margin-top:15px;color:#00ffcc;">
         👤 مرحبًا ${data.username}
       </div>
     `;
@@ -51,11 +57,12 @@ async function authenticatePi() {
   }
 }
 
-// تشغيل تلقائي عند فتح التطبيق
-window.onload = () => {
-  authenticatePi();
-};
+// ✅ تشغيل تلقائي عند فتح التطبيق
+window.addEventListener("load", () => {
+  startPiAuth();
+});
 
-// زر تشغيل يدوي
-loginBtn.onclick = authenticatePi;
+// ✅ زر يدوي
+loginBtn.onclick = startPiAuth;
+
 </script>
