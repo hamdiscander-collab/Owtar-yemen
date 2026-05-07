@@ -1,68 +1,88 @@
-<!-- Pi SDK -->
-<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Owtar Yemen</title>
 
-<script type="module">
-let authData = null;
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
-// زر تسجيل دخول (سيظهر أسفل الصفحة)
-const loginBtn = document.createElement("button");
-loginBtn.innerText = "🔐 تسجيل الدخول بـ Pi";
-loginBtn.style.cssText = `
-  margin-top:15px;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#6c4cff;
-  color:#fff;
-`;
-document.body.appendChild(loginBtn);
-
-// دالة تسجيل الدخول
-async function startPiAuth() {
-  try {
-    if (!window.Pi) {
-      console.error("Pi SDK not loaded");
-      return;
+  <style>
+    body{
+      margin:0;
+      padding:0;
+      background:#f5f5f5;
+      font-family:Arial;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      flex-direction:column;
     }
 
-    // ✅ تهيئة SDK (مرة واحدة فقط)
-    await Pi.init({ version: "2.0", sandbox: true });
+    h1{
+      color:#5b2be0;
+    }
 
-    // ✅ تسجيل الدخول
-    authData = await Pi.authenticate(['username']);
+    button{
+      background:#6c3cff;
+      color:white;
+      border:none;
+      padding:15px 25px;
+      border-radius:15px;
+      font-size:20px;
+      cursor:pointer;
+      box-shadow:0 5px 15px rgba(0,0,0,0.2);
+    }
 
-    console.log("Auth Success:", authData);
+    #status{
+      margin-top:20px;
+      color:#333;
+      font-size:18px;
+    }
+  </style>
+</head>
 
-    // ✅ إرسال التوكن للسيرفر
-    const res = await fetch("https://YOUR-SERVER.onrender.com/auth", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        accessToken: authData.accessToken
-      })
-    });
+<body>
 
-    const data = await res.json();
+  <h1>🎵 Owtar Yemen</h1>
 
-    document.body.innerHTML += `
-      <div style="margin-top:15px;color:#00ffcc;">
-        👤 مرحبًا ${data.username}
-      </div>
-    `;
+  <button onclick="loginPi()">
+    🔐 تسجيل الدخول بـ Pi
+  </button>
 
-  } catch (err) {
-    console.error("Pi Auth Error:", err);
-  }
-}
+  <div id="status"></div>
 
-// ✅ تشغيل تلقائي عند فتح التطبيق
-window.addEventListener("load", () => {
-  startPiAuth();
-});
+  <script>
+    Pi.init({ version: "2.0" });
 
-// ✅ زر يدوي
-loginBtn.onclick = startPiAuth;
+    async function loginPi() {
 
-</script>
+      document.getElementById("status").innerText = "جاري تسجيل الدخول...";
+
+      try {
+
+        const scopes = ['username', 'payments'];
+
+        const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+
+        document.getElementById("status").innerHTML =
+          "✅ مرحباً " + auth.user.username;
+
+      } catch (err) {
+
+        console.error(err);
+
+        document.getElementById("status").innerHTML =
+          "❌ فشل تسجيل الدخول";
+
+      }
+    }
+
+    function onIncompletePaymentFound(payment) {
+      console.log(payment);
+    }
+  </script>
+
+</body>
+</html>
