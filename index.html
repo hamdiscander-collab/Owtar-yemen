@@ -1,87 +1,332 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Owtar Yemen</title>
 
+  <!-- Pi SDK -->
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
+  <!-- خطوط -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
-    body{
+
+    *{
       margin:0;
       padding:0;
-      background:#f5f5f5;
-      font-family:Arial;
+      box-sizing:border-box;
+      font-family:'Cairo',sans-serif;
+    }
+
+    body{
+      background:#0f0f18;
+      color:white;
+      min-height:100vh;
+    }
+
+    header{
+      background:linear-gradient(135deg,#6a11cb,#2575fc);
+      padding:20px;
+      text-align:center;
+      box-shadow:0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    header h1{
+      font-size:32px;
+    }
+
+    header p{
+      margin-top:8px;
+      opacity:0.9;
+    }
+
+    .login-box{
       display:flex;
       justify-content:center;
       align-items:center;
-      height:100vh;
-      flex-direction:column;
+      margin-top:40px;
     }
 
-    h1{
-      color:#5b2be0;
-    }
-
-    button{
-      background:#6c3cff;
-      color:white;
+    .login-btn{
+      background:#7b3dff;
       border:none;
-      padding:15px 25px;
-      border-radius:15px;
+      color:white;
+      padding:16px 28px;
       font-size:20px;
+      border-radius:18px;
       cursor:pointer;
-      box-shadow:0 5px 15px rgba(0,0,0,0.2);
+      transition:0.3s;
+      box-shadow:0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .login-btn:hover{
+      transform:scale(1.05);
     }
 
     #status{
+      text-align:center;
       margin-top:20px;
-      color:#333;
       font-size:18px;
+      color:#ddd;
     }
+
+    #app{
+      display:none;
+      padding:20px;
+    }
+
+    .welcome{
+      text-align:center;
+      margin-bottom:25px;
+    }
+
+    .search-box{
+      margin-bottom:25px;
+      text-align:center;
+    }
+
+    .search-box input{
+      width:95%;
+      max-width:500px;
+      padding:14px;
+      border:none;
+      border-radius:15px;
+      font-size:18px;
+      outline:none;
+    }
+
+    .songs-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:20px;
+    }
+
+    .song-card{
+      background:#1a1a2e;
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:0 8px 20px rgba(0,0,0,0.3);
+      transition:0.3s;
+    }
+
+    .song-card:hover{
+      transform:translateY(-5px);
+    }
+
+    .song-card img{
+      width:100%;
+      height:220px;
+      object-fit:cover;
+    }
+
+    .song-info{
+      padding:15px;
+    }
+
+    .song-info h3{
+      margin-bottom:8px;
+      color:#fff;
+    }
+
+    .song-info p{
+      color:#bbb;
+      margin-bottom:12px;
+    }
+
+    audio{
+      width:100%;
+      margin-top:10px;
+    }
+
+    footer{
+      text-align:center;
+      padding:25px;
+      margin-top:40px;
+      color:#aaa;
+    }
+
   </style>
 </head>
 
 <body>
 
-  <h1>🎵 Owtar Yemen</h1>
+  <header>
+    <h1>🎵 Owtar Yemen</h1>
+    <p>أجمل الأغاني اليمنية والتراث الأصيل</p>
+  </header>
 
-  <button onclick="loginPi()">
-    🔐 تسجيل الدخول بـ Pi
-  </button>
+  <div class="login-box">
+    <button class="login-btn" onclick="loginPi()">
+      🔐 تسجيل الدخول بـ Pi
+    </button>
+  </div>
 
   <div id="status"></div>
 
+  <!-- التطبيق -->
+  <div id="app">
+
+    <div class="welcome">
+      <h2 id="welcomeText"></h2>
+      <p>استمتع بالموسيقى اليمنية الأصيلة</p>
+    </div>
+
+    <div class="search-box">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="ابحث عن أغنية أو فنان..."
+        onkeyup="searchSongs()"
+      >
+    </div>
+
+    <div class="songs-grid" id="songsContainer">
+
+      <!-- اغنية -->
+      <div class="song-card">
+
+        <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f">
+
+        <div class="song-info">
+
+          <h3>عود يمني تراثي</h3>
+
+          <p>موسيقى يمنية هادئة</p>
+
+          <audio controls>
+            <source
+              src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+              type="audio/mpeg">
+          </audio>
+
+        </div>
+
+      </div>
+
+      <!-- اغنية -->
+      <div class="song-card">
+
+        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4">
+
+        <div class="song-info">
+
+          <h3>أنغام صنعانية</h3>
+
+          <p>فن يمني أصيل</p>
+
+          <audio controls>
+            <source
+              src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+              type="audio/mpeg">
+          </audio>
+
+        </div>
+
+      </div>
+
+      <!-- اغنية -->
+      <div class="song-card">
+
+        <img src="https://images.unsplash.com/photo-1507838153414-b4b713384a76">
+
+        <div class="song-info">
+
+          <h3>جلسة طرب يمني</h3>
+
+          <p>إيقاعات شعبية يمنية</p>
+
+          <audio controls>
+            <source
+              src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+              type="audio/mpeg">
+          </audio>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <footer>
+    جميع الحقوق محفوظة © Owtar Yemen
+  </footer>
+
   <script>
+
     Pi.init({ version: "2.0" });
 
     async function loginPi() {
 
-      document.getElementById("status").innerText = "جاري تسجيل الدخول...";
+      document.getElementById("status").innerHTML =
+      "⏳ جاري تسجيل الدخول...";
 
       try {
 
         const scopes = ['username', 'payments'];
 
-        const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+        const authResult = await Pi.authenticate(
+          scopes,
+          onIncompletePaymentFound
+        );
 
         document.getElementById("status").innerHTML =
-          "✅ مرحباً " + auth.user.username;
+        "✅ تم تسجيل الدخول بنجاح";
 
-      } catch (err) {
+        document.getElementById("welcomeText").innerHTML =
+        "أهلاً " + authResult.user.username + " 👋";
 
-        console.error(err);
+        document.getElementById("app").style.display = "block";
+
+      } catch (error) {
+
+        console.error(error);
 
         document.getElementById("status").innerHTML =
-          "❌ فشل تسجيل الدخول";
+        "❌ فشل تسجيل الدخول";
 
       }
+
     }
 
     function onIncompletePaymentFound(payment) {
       console.log(payment);
     }
+
+    // البحث
+    function searchSongs() {
+
+      let input =
+      document.getElementById("searchInput").value.toLowerCase();
+
+      let cards =
+      document.getElementsByClassName("song-card");
+
+      for(let i = 0; i < cards.length; i++) {
+
+        let text =
+        cards[i].innerText.toLowerCase();
+
+        if(text.includes(input)) {
+
+          cards[i].style.display = "block";
+
+        } else {
+
+          cards[i].style.display = "none";
+
+        }
+
+      }
+
+    }
+
   </script>
 
 </body>
