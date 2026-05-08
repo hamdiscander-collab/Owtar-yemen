@@ -2,13 +2,17 @@
 <html lang="ar" dir="rtl">
 
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Owtar Yemen</title>
 
+<!-- Pi SDK -->
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
+<!-- خط عربي -->
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
@@ -34,7 +38,7 @@ box-shadow:0 5px 20px rgba(0,0,0,0.3);
 }
 
 header h1{
-font-size:32px;
+font-size:34px;
 }
 
 header p{
@@ -93,6 +97,9 @@ outline:none;
 .upload-box{
 text-align:center;
 margin-bottom:25px;
+background:#1e293b;
+padding:20px;
+border-radius:20px;
 }
 
 .upload-box input{
@@ -140,6 +147,43 @@ audio{
 width:100%;
 }
 
+.ai-box{
+margin-top:30px;
+background:#1e293b;
+padding:20px;
+border-radius:20px;
+text-align:center;
+}
+
+.ai-box textarea{
+width:100%;
+height:120px;
+border:none;
+border-radius:15px;
+padding:15px;
+font-size:16px;
+margin-top:15px;
+resize:none;
+}
+
+.ai-btn{
+margin-top:15px;
+background:#9333ea;
+border:none;
+padding:14px 25px;
+border-radius:15px;
+font-size:18px;
+color:white;
+cursor:pointer;
+}
+
+.result-box{
+margin-top:20px;
+padding:15px;
+background:#0f172a;
+border-radius:15px;
+}
+
 footer{
 text-align:center;
 padding:25px;
@@ -148,6 +192,7 @@ color:#94a3b8;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -157,7 +202,7 @@ color:#94a3b8;
 <h1>🎵 Owtar Yemen</h1>
 
 <p>
-الموسيقى اليمنية الأصيلة داخل شبكة Pi
+منصة الموسيقى اليمنية الذكية داخل Pi Network
 </p>
 
 </header>
@@ -181,7 +226,7 @@ color:#94a3b8;
 <h2 id="welcomeText"></h2>
 
 <p>
-استمتع بأجمل الأغاني اليمنية والتراث الأصيل
+استمتع بالموسيقى اليمنية الأصيلة
 </p>
 
 </div>
@@ -199,7 +244,9 @@ onkeyup="searchSongs()"
 
 <div class="upload-box">
 
-<h3>📤 إضافة أغنية من جهازك</h3>
+<h3>📤 رفع أغنية من جهازك</h3>
+
+<br>
 
 <input
 type="file"
@@ -279,19 +326,59 @@ type="audio/mpeg">
 
 </div>
 
+<!-- الذكاء الاصطناعي -->
+
+<div class="ai-box">
+
+<h2>🤖 إنشاء كلمات أغنية يمنية</h2>
+
+<textarea
+id="lyricsInput"
+placeholder="اكتب فكرة الأغنية هنا..."
+></textarea>
+
+<button class="ai-btn" onclick="generateLyrics()">
+
+✨ توليد كلمات
+
+</button>
+
+<div class="result-box" id="lyricsResult">
+
+ستظهر كلمات الأغنية هنا
+
+</div>
+
+</div>
+
 </div>
 
 <footer>
 
-© Owtar Yemen
+© Owtar Yemen - Pi Network
 
 </footer>
 
 <script>
 
+window.onload = function(){
+
+if(window.Pi){
+
 Pi.init({
-version: "2.0"
+version:"2.0",
+sandbox:true
 });
+
+console.log("Pi SDK Loaded");
+
+}else{
+
+alert("Pi SDK لم يتم تحميله");
+
+}
+
+};
 
 async function loginPi(){
 
@@ -300,7 +387,7 @@ document.getElementById("status").innerHTML =
 
 try{
 
-const scopes = ['username','payments'];
+const scopes = ['username'];
 
 const auth = await Pi.authenticate(
 scopes,
@@ -308,16 +395,16 @@ onIncompletePaymentFound
 );
 
 document.getElementById("status").innerHTML =
-"✅ تم تسجيل الدخول";
+"✅ مرحباً " + auth.user.username;
 
 document.getElementById("welcomeText").innerHTML =
 "أهلاً " + auth.user.username + " 👋";
 
 document.getElementById("app").style.display = "block";
 
-}catch(err){
+}catch(error){
 
-console.error(err);
+console.error(error);
 
 document.getElementById("status").innerHTML =
 "❌ فشل تسجيل الدخول";
@@ -371,7 +458,8 @@ const audioURL = URL.createObjectURL(file);
 const container =
 document.getElementById("songsContainer");
 
-const newSong = document.createElement("div");
+const newSong =
+document.createElement("div");
 
 newSong.className = "song-card";
 
@@ -399,7 +487,38 @@ container.prepend(newSong);
 
 }
 
+function generateLyrics(){
+
+let text =
+document.getElementById("lyricsInput").value;
+
+if(text.trim() === ""){
+
+alert("اكتب فكرة الأغنية أولاً");
+
+return;
+
+}
+
+let generated = `
+
+🎶 كلمات مقترحة:
+
+يا ليل خبرني عن الأحباب
+وعن صنعاء وقت الغياب
+
+والعود يشكي من الأشواق
+والقلب ما ذاق غير العذاب
+
+`;
+
+document.getElementById("lyricsResult").innerText =
+generated;
+
+}
+
 </script>
 
 </body>
+
 </html>
