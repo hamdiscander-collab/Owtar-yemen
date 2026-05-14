@@ -6,61 +6,78 @@
     <title>أوتار اليمن.HS</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
-        body { background: #0F0F10; color: white; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
-        .container { width: 100%; max-width: 400px; text-align: center; }
-        textarea { width: 100%; height: 100px; border-radius: 10px; padding: 10px; margin: 10px 0; }
-        button { width: 100%; padding: 15px; border-radius: 10px; background: #D4AF37; border: none; font-weight: bold; cursor: pointer; }
-        #statusLog { font-size: 12px; color: #888; margin-top: 20px; text-align: left; }
+        body { background: #0F0F10; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .card { max-width: 400px; margin: auto; background: #1A1A1C; padding: 20px; border-radius: 20px; }
+        textarea { width: 100%; height: 80px; margin: 10px 0; border-radius: 10px; padding: 10px; }
+        button { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        .btn-main { background: #D4AF37; color: black; }
+        .btn-auth { background: #444; color: white; font-size: 12px; }
+        #status { color: #00FF9D; font-size: 14px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
-<div class="container">
+<div class="card">
     <h1>أوتار اليمن.HS</h1>
-    <div id="userStatus">جاري تهيئة النظام...</div>
-    <textarea id="promptIn" placeholder="اكتب كلمات الأغنية..."></textarea>
-    <button id="execBtn" onclick="generate()">إنتاج العمل الفني ✨</button>
+    <div id="status">جاري تهيئة Pi SDK...</div>
+    <button id="signInBtn" class="btn-auth" onclick="handleAuth()" style="display:none;">تسجيل دخول يدوي</button>
+    
+    <textarea id="promptIn" placeholder="اكتب وصف اللحن هنا..."></textarea>
+    <button id="execBtn" class="btn-main" onclick="generate()" disabled>إنتاج العمل الفني ✨</button>
     <audio id="audioMaster" controls style="width: 100%; margin-top: 20px; display: none;"></audio>
-    <div id="statusLog">> بانتظار أمرك...</div>
 </div>
 
 <script>
-    const Pi = window.Pi;
-    function log(msg) { document.getElementById('statusLog').innerHTML += `<br>> ${msg}`; }
+    let currentToken = null;
 
-    window.onload = function() {
-        if (window.Pi) {
-            Pi.init({ version: "1.5", sandbox: true });
-            setTimeout(async () => {
-                try {
-                    const auth = await Pi.authenticate(['username'], () => {});
-                    document.getElementById('userStatus').innerText = "مرحباً " + auth.user.username;
-                    log("تمت المصادقة.");
-                } catch (e) { log("خطأ مصادقة: " + e.message); }
-            }, 2000);
+    async function initPi() {
+        try {
+            await window.Pi.init({ version: "1.5", sandbox: true });
+            await handleAuth();
+        } catch (err) {
+            document.getElementById('status').innerText = "خطأ في تهيئة Pi SDK";
         }
-    };
+    }
+
+    async function handleAuth() {
+        const status = document.getElementById('status');
+        const signBtn = document.getElementById('signInBtn');
+        try {
+            const auth = await window.Pi.authenticate(['username'], (onPayment) => {});
+            currentToken = auth.accessToken;
+            status.innerText = `مرحباً، ${auth.user.username} ✅`;
+            signBtn.style.display = "none";
+            document.getElementById('execBtn').disabled = false;
+        } catch (err) {
+            status.innerText = "فشل المصادقة - يرجى تسجيل الدخول";
+            signBtn.style.display = "block";
+        }
+    }
 
     async function generate() {
         const prompt = document.getElementById('promptIn').value;
-        const audio = document.getElementById('audioMaster');
-        log("جاري التوليد...");
-        
+        if (!currentToken) return alert("يرجى تسجيل الدخول أولاً");
+
         const response = await fetch('https://owtar-yemen5.onrender.com', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: prompt })
+            body: JSON.stringify({ 
+                prompt: prompt,
+                auth_token: currentToken 
+            })
         });
 
         if (response.ok) {
             const blob = await response.blob();
+            const audio = document.getElementById('audioMaster');
             audio.src = URL.createObjectURL(blob);
             audio.style.display = "block";
             audio.play();
-            log("اكتمل الإنتاج بنجاح ✅");
         } else {
-            log("فشل الإنتاج. تأكد من مفتاح OpenAI.");
+            alert("خطأ في الخادم أو المصادقة");
         }
     }
+
+    window.onload = initPi;
 </script>
 </body>
 </html>
