@@ -1,13 +1,12 @@
 {
-  "name": "owtar-yemen-studio",
-  "version": "6.0.0",
-  "description": "استوديو أوتار اليمن للذكاء الاصطناعي",
-  "main": "api/generate.js",
+  "name": "owtar-yemen-ai",
+  "version": "1.0.0",
   "type": "module",
-  "scripts": {
-    "start": "node api/generate.js"
-  },
   "dependencies": {
-    "node-fetch": "^3.3.1"
+    "node-fetch": "^3.3.1",
+    "dotenv": "^16.0.3"
+  },
+  "scripts": {
+    "start": "node generate.js"
   }
 }
