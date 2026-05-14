@@ -2,300 +2,65 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>أوتار اليمن | الاستوديو الذكي المتكامل</title>
-    
-    <!-- مكتبة Pi Network SDK -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أوتار اليمن.HS</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-
     <style>
-        :root {
-            --gold: #D4AF37;
-            --gold-light: #FFD700;
-            --dark-bg: #0F0F10;
-            --card-bg: #1A1A1C;
-            --accent: #00FF9D;
-            --text-gray: #A0A0A0;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        
-        body { 
-            background: var(--dark-bg); 
-            color: white; 
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 450px;
-            padding: 20px;
-            padding-bottom: 40px;
-        }
-
-        /* الهيدر */
-        header {
-            text-align: center;
-            padding: 30px 0;
-            position: relative;
-        }
-
-        .logo-box h1 {
-            font-size: 28px;
-            font-weight: 900;
-            background: linear-gradient(to bottom, var(--gold-light), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
-        }
-
-        .user-status {
-            font-size: 13px;
-            color: var(--accent);
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        /* البطاقة الرئيسية */
-        .glass-card {
-            background: var(--card-bg);
-            border-radius: 30px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            color: var(--gold);
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            margin-right: 5px;
-        }
-
-        textarea {
-            width: 100%;
-            background: #000;
-            border: 1.5px solid #333;
-            border-radius: 20px;
-            color: #fff;
-            padding: 18px;
-            font-size: 16px;
-            outline: none;
-            transition: 0.3s;
-            resize: none;
-        }
-
-        textarea:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.1); }
-
-        /* الأزرار */
-        .btn-glow {
-            background: linear-gradient(45deg, var(--gold), #B8860B);
-            color: #000;
-            border: none;
-            width: 100%;
-            padding: 20px;
-            border-radius: 20px;
-            font-weight: 900;
-            font-size: 18px;
-            cursor: pointer;
-            margin-top: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
-            transition: 0.3s;
-        }
-
-        .btn-glow:active { transform: scale(0.98); }
-        .btn-glow:disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(1); }
-
-        /* منطقة النتائج */
-        #resultArea {
-            display: none;
-            animation: slideUp 0.5s ease;
-        }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .player-card {
-            background: #111;
-            border-radius: 25px;
-            padding: 20px;
-            border: 1px solid var(--gold);
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        audio { width: 100%; margin: 15px 0; filter: invert(0.9) hue-rotate(180deg); }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 12px;
-            border-radius: 15px;
-            width: 100%;
-            margin-top: 10px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        /* سجل النظام */
-        .system-log {
-            background: rgba(0,0,0,0.4);
-            border-radius: 15px;
-            padding: 15px;
-            font-family: monospace;
-            font-size: 11px;
-            color: #888;
-            height: 80px;
-            overflow-y: auto;
-            margin-top: 20px;
-            border: 1px solid #222;
-        }
-
-        .loader {
-            display: none;
-            border: 3px solid #333;
-            border-top: 3px solid var(--gold);
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
+        body { background: #0F0F10; color: white; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
+        .container { width: 100%; max-width: 400px; text-align: center; }
+        textarea { width: 100%; height: 100px; border-radius: 10px; padding: 10px; margin: 10px 0; }
+        button { width: 100%; padding: 15px; border-radius: 10px; background: #D4AF37; border: none; font-weight: bold; cursor: pointer; }
+        #statusLog { font-size: 12px; color: #888; margin-top: 20px; text-align: left; }
     </style>
 </head>
 <body>
-
-<div class="app-container">
-    <header>
-        <div class="logo-box">
-            <h1>أوتار اليمن.HS</h1>
-        </div>
-        <div id="userGreeting" class="user-status">
-            <div class="loader" id="authLoader" style="display:inline-block;"></div>
-            <span>جاري تهيئة Pi SDK...</span>
-        </div>
-    </header>
-
-    <div class="glass-card">
-        <div class="input-group">
-            <label><i class="fa-solid fa-wand-magic-sparkles"></i> ماذا تريد أن تعزف؟</label>
-            <textarea id="promptIn" rows="4" placeholder="مثال: لحن تعزي على مقام راست، كلمات عن الحنين لتعز..."></textarea>
-        </div>
-        
-        <button id="execBtn" class="btn-glow" onclick="generateArt()">
-            <span id="btnText">إنتاج العمل الفني</span>
-            <div class="loader" id="genLoader"></div>
-        </button>
-
-        <div class="system-log" id="statusLog">> نظام أوتار جاهز...</div>
-    </div>
-
-    <div id="resultArea" class="player-card">
-        <div style="margin-bottom:15px; color:var(--gold); font-weight:bold;">
-            <i class="fa-solid fa-music"></i> تم الإنتاج بنجاح
-        </div>
-        <audio id="audioMaster" controls></audio>
-        <button class="btn-outline" onclick="downloadAudio()">
-            <i class="fa-solid fa-download"></i> حفظ الملف الصوتي
-        </button>
-    </div>
+<div class="container">
+    <h1>أوتار اليمن.HS</h1>
+    <div id="userStatus">جاري تهيئة النظام...</div>
+    <textarea id="promptIn" placeholder="اكتب كلمات الأغنية..."></textarea>
+    <button id="execBtn" onclick="generate()">إنتاج العمل الفني ✨</button>
+    <audio id="audioMaster" controls style="width: 100%; margin-top: 20px; display: none;"></audio>
+    <div id="statusLog">> بانتظار أمرك...</div>
 </div>
 
 <script>
     const Pi = window.Pi;
-    const logBox = document.getElementById('statusLog');
-    
-    function log(msg) {
-        logBox.innerHTML += `<br>> ${msg}`;
-        logBox.scrollTop = logBox.scrollHeight;
-    }
+    function log(msg) { document.getElementById('statusLog').innerHTML += `<br>> ${msg}`; }
 
-    // 1. تهيئة النظام
     window.onload = function() {
-        if (Pi) {
+        if (window.Pi) {
             Pi.init({ version: "1.5", sandbox: true });
-            authenticate();
-        } else {
-            log("خطأ: Pi SDK لم يتم تحميله");
+            setTimeout(async () => {
+                try {
+                    const auth = await Pi.authenticate(['username'], () => {});
+                    document.getElementById('userStatus').innerText = "مرحباً " + auth.user.username;
+                    log("تمت المصادقة.");
+                } catch (e) { log("خطأ مصادقة: " + e.message); }
+            }, 2000);
         }
     };
 
-    async function authenticate() {
-        try {
-            const auth = await Pi.authenticate(['username'], (onIncompletePaymentFound) => {});
-            document.getElementById('userGreeting').innerHTML = `<i class="fa-solid fa-circle-check"></i> مرحباً، ${auth.user.username}`;
-            document.getElementById('authLoader').style.display = 'none';
-            log("تمت المصادقة بنجاح.");
-        } catch (err) {
-            log("فشل المصادقة: " + err.message);
-            document.getElementById('userGreeting').innerHTML = "يرجى الفتح من متصفح Pi";
-        }
-    }
-
-    async function generateArt() {
+    async function generate() {
         const prompt = document.getElementById('promptIn').value;
-        const btn = document.getElementById('execBtn');
-        const loader = document.getElementById('genLoader');
-        const btnText = document.getElementById('btnText');
+        const audio = document.getElementById('audioMaster');
+        log("جاري التوليد...");
+        
+        const response = await fetch('https://owtar-yemen5.onrender.com', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: prompt })
+        });
 
-        if(!prompt) return alert("يرجى كتابة وصف أولاً");
-
-        btn.disabled = true;
-        loader.style.display = "block";
-        btnText.innerText = "جاري المعالجة...";
-        log("بدء التواصل مع الذكاء الاصطناعي...");
-
-        try {
-            const response = await fetch('https://owtar-yemen5.onrender.com', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: prompt })
-            });
-
-            if (!response.ok) throw new Error("السيرفر لا يستجيب");
-
+        if (response.ok) {
             const blob = await response.blob();
-            const url = URL.createObjectURL(blob);
-            
-            document.getElementById('audioMaster').src = url;
-            document.getElementById('resultArea').style.display = "block";
-            log("اكتمل الإنتاج! استمع الآن.");
-            
-        } catch (err) {
-            log("حدث خطأ: " + err.message);
-            alert("حدث خطأ أثناء الإنتاج، حاول مجدداً");
-        } finally {
-            btn.disabled = false;
-            loader.style.display = "none";
-            btnText.innerText = "إنتاج العمل الفني";
+            audio.src = URL.createObjectURL(blob);
+            audio.style.display = "block";
+            audio.play();
+            log("اكتمل الإنتاج بنجاح ✅");
+        } else {
+            log("فشل الإنتاج. تأكد من مفتاح OpenAI.");
         }
-    }
-
-    function downloadAudio() {
-        const a = document.createElement('a');
-        a.href = document.getElementById('audioMaster').src;
-        a.download = "Owtar_Yemen_Art.mp3";
-        a.click();
     }
 </script>
-
 </body>
 </html>
