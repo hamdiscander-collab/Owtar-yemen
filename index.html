@@ -1,524 +1,112 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Owtar Yemen</title>
-
-<!-- Pi SDK -->
-<script src="https://sdk.minepi.com/pi-sdk.js"></script>
-
-<!-- خط عربي -->
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Cairo',sans-serif;
-}
-
-body{
-background:#0f172a;
-color:white;
-min-height:100vh;
-}
-
-header{
-background:linear-gradient(135deg,#6d28d9,#2563eb);
-padding:20px;
-text-align:center;
-box-shadow:0 5px 20px rgba(0,0,0,0.3);
-}
-
-header h1{
-font-size:34px;
-}
-
-header p{
-margin-top:10px;
-opacity:0.9;
-}
-
-.login-section{
-display:flex;
-justify-content:center;
-margin-top:30px;
-}
-
-.login-btn{
-background:#7c3aed;
-border:none;
-padding:16px 30px;
-font-size:20px;
-color:white;
-border-radius:18px;
-cursor:pointer;
-box-shadow:0 10px 20px rgba(0,0,0,0.3);
-}
-
-#status{
-text-align:center;
-margin-top:20px;
-font-size:18px;
-}
-
-#app{
-display:none;
-padding:20px;
-}
-
-.welcome{
-text-align:center;
-margin-bottom:25px;
-}
-
-.search-box{
-text-align:center;
-margin-bottom:25px;
-}
-
-.search-box input{
-width:95%;
-max-width:500px;
-padding:14px;
-border:none;
-border-radius:14px;
-font-size:18px;
-outline:none;
-}
-
-.upload-box{
-text-align:center;
-margin-bottom:25px;
-background:#1e293b;
-padding:20px;
-border-radius:20px;
-}
-
-.upload-box input{
-margin-top:10px;
-}
-
-.songs-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-gap:20px;
-}
-
-.song-card{
-background:#1e293b;
-border-radius:20px;
-overflow:hidden;
-box-shadow:0 10px 20px rgba(0,0,0,0.25);
-transition:0.3s;
-}
-
-.song-card:hover{
-transform:translateY(-5px);
-}
-
-.song-card img{
-width:100%;
-height:220px;
-object-fit:cover;
-}
-
-.song-info{
-padding:15px;
-}
-
-.song-info h3{
-margin-bottom:8px;
-}
-
-.song-info p{
-color:#cbd5e1;
-margin-bottom:12px;
-}
-
-audio{
-width:100%;
-}
-
-.ai-box{
-margin-top:30px;
-background:#1e293b;
-padding:20px;
-border-radius:20px;
-text-align:center;
-}
-
-.ai-box textarea{
-width:100%;
-height:120px;
-border:none;
-border-radius:15px;
-padding:15px;
-font-size:16px;
-margin-top:15px;
-resize:none;
-}
-
-.ai-btn{
-margin-top:15px;
-background:#9333ea;
-border:none;
-padding:14px 25px;
-border-radius:15px;
-font-size:18px;
-color:white;
-cursor:pointer;
-}
-
-.result-box{
-margin-top:20px;
-padding:15px;
-background:#0f172a;
-border-radius:15px;
-}
-
-footer{
-text-align:center;
-padding:25px;
-margin-top:40px;
-color:#94a3b8;
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>أوتار اليمن | الاستوديو الذكي</title>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #D4AF37; --dark: #0A0A0B; --card: #161618; --accent: #00FF9D; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: var(--dark); color: white; padding: 15px; }
+        .app-shell { max-width: 500px; margin: auto; }
+        .studio-card { background: var(--card); border-radius: 25px; padding: 20px; border: 1px solid #222; }
+        textarea { width: 100%; background: #000; border: 1px solid #333; border-radius: 15px; color: #fff; padding: 15px; margin: 15px 0; }
+        .btn-main { background: var(--gold); color: #000; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; }
+        .player-panel { display: none; background: var(--card); border-radius: 25px; padding: 20px; border: 1px solid var(--gold); margin-top: 20px; text-align: center; }
+        audio { width: 100%; margin: 15px 0; filter: invert(1); }
+        .console { background: #000; border-radius: 15px; padding: 15px; font-size: 11px; color: var(--accent); height: 100px; overflow-y: auto; margin-top: 15px; }
+    </style>
 </head>
-
 <body>
 
-<header>
+<div class="app-shell">
+    <header style="text-align:center; padding:20px;">
+        <div style="font-size:24px; font-weight:900; color:var(--gold);">أوتار اليمن.HS</div>
+        <div id="userGreeting" style="font-size:12px; color:var(--accent);">جاري التحميل...</div>
+    </header>
 
-<h1>🎵 Owtar Yemen</h1>
+    <main class="studio-card">
+        <textarea id="promptIn" rows="3" placeholder="اكتب وصف اللحن هنا..."></textarea>
+        <button id="execBtn" class="btn-main" onclick="processAll()">إنتاج العمل الفني ✨</button>
+        <div id="lyricsDisplay" style="display:none; margin-top:15px; color:#ccc; font-size:14px; border-right:3px solid var(--gold); padding-right:10px;"></div>
+        <div id="statusLog" class="console">> بانتظار تهيئة النظام...</div>
+    </main>
 
-<p>
-منصة الموسيقى اليمنية الذكية داخل Pi Network
-</p>
-
-</header>
-
-<div class="login-section">
-
-<button class="login-btn" onclick="loginPi()">
-
-🔐 تسجيل الدخول بـ Pi
-
-</button>
-
+    <section id="playerBox" class="player-panel">
+        <audio id="audioMaster" controls></audio>
+        <button onclick="saveToPhone()" style="width:100%; background:none; border:1px solid var(--gold); color:var(--gold); padding:10px; border-radius:10px; margin-top:10px;">حفظ في الهاتف</button>
+    </section>
 </div>
-
-<div id="status"></div>
-
-<div id="app">
-
-<div class="welcome">
-
-<h2 id="welcomeText"></h2>
-
-<p>
-استمتع بالموسيقى اليمنية الأصيلة
-</p>
-
-</div>
-
-<div class="search-box">
-
-<input
-type="text"
-id="searchInput"
-placeholder="ابحث عن أغنية أو فنان..."
-onkeyup="searchSongs()"
->
-
-</div>
-
-<div class="upload-box">
-
-<h3>📤 رفع أغنية من جهازك</h3>
-
-<br>
-
-<input
-type="file"
-accept="audio/*"
-onchange="uploadSong(event)"
->
-
-</div>
-
-<div class="songs-grid" id="songsContainer">
-
-<div class="song-card">
-
-<img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f">
-
-<div class="song-info">
-
-<h3>عود يمني تراثي</h3>
-
-<p>جلسة يمنية هادئة</p>
-
-<audio controls>
-
-<source
-src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-type="audio/mpeg">
-
-</audio>
-
-</div>
-
-</div>
-
-<div class="song-card">
-
-<img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4">
-
-<div class="song-info">
-
-<h3>أنغام صنعانية</h3>
-
-<p>فن يمني أصيل</p>
-
-<audio controls>
-
-<source
-src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
-type="audio/mpeg">
-
-</audio>
-
-</div>
-
-</div>
-
-<div class="song-card">
-
-<img src="https://images.unsplash.com/photo-1507838153414-b4b713384a76">
-
-<div class="song-info">
-
-<h3>جلسة حضرمية</h3>
-
-<p>إيقاعات يمنية شعبية</p>
-
-<audio controls>
-
-<source
-src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
-type="audio/mpeg">
-
-</audio>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- الذكاء الاصطناعي -->
-
-<div class="ai-box">
-
-<h2>🤖 إنشاء كلمات أغنية يمنية</h2>
-
-<textarea
-id="lyricsInput"
-placeholder="اكتب فكرة الأغنية هنا..."
-></textarea>
-
-<button class="ai-btn" onclick="generateLyrics()">
-
-✨ توليد كلمات
-
-</button>
-
-<div class="result-box" id="lyricsResult">
-
-ستظهر كلمات الأغنية هنا
-
-</div>
-
-</div>
-
-</div>
-
-<footer>
-
-© Owtar Yemen - Pi Network
-
-</footer>
 
 <script>
-
-window.onload = function(){
-
-if(window.Pi){
-
-Pi.init({
-version:"2.0",
-sandbox:true
-});
-
-console.log("Pi SDK Loaded");
-
-}else{
-
-alert("Pi SDK لم يتم تحميله");
-
-}
-
-};
-
-async function loginPi(){
-
-document.getElementById("status").innerHTML =
-"⏳ جاري تسجيل الدخول...";
-
-try{
-
-const scopes = ['username'];
-
-const auth = await Pi.authenticate(
-scopes,
-onIncompletePaymentFound
-);
-
-document.getElementById("status").innerHTML =
-"✅ مرحباً " + auth.user.username;
-
-document.getElementById("welcomeText").innerHTML =
-"أهلاً " + auth.user.username + " 👋";
-
-document.getElementById("app").style.display = "block";
-
-}catch(error){
-
-console.error(error);
-
-document.getElementById("status").innerHTML =
-"❌ فشل تسجيل الدخول";
-
-}
-
-}
-
-function onIncompletePaymentFound(payment){
-
-console.log(payment);
-
-}
-
-function searchSongs(){
-
-let input =
-document.getElementById("searchInput")
-.value.toLowerCase();
-
-let cards =
-document.getElementsByClassName("song-card");
-
-for(let i=0;i<cards.length;i++){
-
-let text =
-cards[i].innerText.toLowerCase();
-
-if(text.includes(input)){
-
-cards[i].style.display="block";
-
-}else{
-
-cards[i].style.display="none";
-
-}
-
-}
-
-}
-
-function uploadSong(event){
-
-const file = event.target.files[0];
-
-if(!file) return;
-
-const audioURL = URL.createObjectURL(file);
-
-const container =
-document.getElementById("songsContainer");
-
-const newSong =
-document.createElement("div");
-
-newSong.className = "song-card";
-
-newSong.innerHTML = `
-
-<img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81">
-
-<div class="song-info">
-
-<h3>${file.name}</h3>
-
-<p>أغنية مضافة من المستخدم</p>
-
-<audio controls>
-
-<source src="${audioURL}" type="audio/mpeg">
-
-</audio>
-
-</div>
-
-`;
-
-container.prepend(newSong);
-
-}
-
-function generateLyrics(){
-
-let text =
-document.getElementById("lyricsInput").value;
-
-if(text.trim() === ""){
-
-alert("اكتب فكرة الأغنية أولاً");
-
-return;
-
-}
-
-let generated = `
-
-🎶 كلمات مقترحة:
-
-يا ليل خبرني عن الأحباب
-وعن صنعاء وقت الغياب
-
-والعود يشكي من الأشواق
-والقلب ما ذاق غير العذاب
-
-`;
-
-document.getElementById("lyricsResult").innerText =
-generated;
-
-}
-
+    const log = (msg) => {
+        const con = document.getElementById('statusLog');
+        con.innerHTML += `<br>> ${msg}`;
+        con.scrollTop = con.scrollHeight;
+    };
+
+    // تأخير التهيئة لضمان تحميل المكتبة
+    window.onload = function() {
+        if (window.Pi) {
+            window.Pi.init({ version: "1.5", sandbox: true });
+            authenticateUser();
+        } else {
+            log("خطأ: لم يتم تحميل مكتبة Pi SDK");
+        }
+    };
+
+    async function authenticateUser() {
+        try {
+            const auth = await window.Pi.authenticate(['username'], (p) => {});
+            document.getElementById('userGreeting').innerText = `مرحباً، ${auth.user.username}`;
+            log("تم الاتصال بـ Pi Network بنجاح ✅");
+        } catch (err) {
+            log("فشل المصادقة: " + err.message);
+        }
+    }
+
+    async function processAll() {
+        const prompt = document.getElementById('promptIn').value;
+        const btn = document.getElementById('execBtn');
+        if(!prompt) return alert("يرجى كتابة وصف");
+
+        btn.disabled = true;
+        log("بدء توليد اللحن (قد يستغرق 30 ثانية)...");
+
+        try {
+            const response = await fetch('https://owtar-yemen5.onrender.com', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: prompt })
+            });
+
+            if (!response.ok) throw new Error("السيرفر لا يستجيب حالياً");
+
+            const blob = await response.blob();
+            if (blob.size < 1000) throw new Error("ملف الصوت فارغ - تأكد من مفتاح Hugging Face");
+
+            const url = URL.createObjectURL(blob);
+            const audio = document.getElementById('audioMaster');
+            audio.src = url;
+            document.getElementById('playerBox').style.display = 'block';
+            log("تم التوليد بنجاح! اضغط تشغيل.");
+            audio.play().catch(() => log("يرجى الضغط على زر التشغيل يدوياً"));
+
+        } catch (err) {
+            log("خطأ: " + err.message);
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function saveToPhone() {
+        const a = document.createElement('a');
+        a.href = document.getElementById('audioMaster').src;
+        a.download = "Owtar_Yemen.mp3";
+        a.click();
+    }
 </script>
-
 </body>
-
 </html>
